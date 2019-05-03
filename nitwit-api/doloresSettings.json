@@ -1,0 +1,116 @@
+{
+    "dolores": {
+        "errorDetailsInResponses": "All",
+        "routes": [
+            {
+                "identifier": "Home",
+                "uriTemplate": "",
+                "get": {
+                    "type": "nitwitapi.Controllers.HomeController, nitwitapi",
+                    "method": "Home"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "Users",
+                "uriTemplate": "/users",
+                "get": {
+                    "type": "nitwitapi.Controllers.UserController, nitwitapi",
+                    "method": "GetAllUsers"
+                },
+                "post": {
+                    "type": "nitwitapi.Controllers.UserController, nitwitapi",
+                    "method": "AddUser"
+                },
+                "delete": {
+                    "type": "nitwitapi.Controllers.UserController, nitwitapi",
+                    "method": "DeleteAllUsers"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "User",
+                "uriTemplate": "/users/{username}",
+                "get": {
+                    "type": "nitwitapi.Controllers.UserController, nitwitapi",
+                    "method": "GetUser"
+                },
+                "delete": {
+                    "type": "nitwitapi.Controllers.UserController, nitwitapi",
+                    "method": "DeleteUser"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "Posts",
+                "uriTemplate": "/users/{username}/posts",
+                "get": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "GetAllPosts"
+                },
+                "post": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "AddPost"
+                },
+                "delete": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "DeleteAllPosts"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "Post",
+                "uriTemplate": "/users/{username}/posts/{postId}",
+                "get": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "GetPost"
+                },
+                "delete": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "DeletePost"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "Timeline",
+                "uriTemplate": "/users/{username}/timeline",
+                "get": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "GetTimeline"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "FollowingCollection",
+                "uriTemplate": "/users/{username}/following",
+                "post": {
+                    "type": "nitwitapi.Controllers.FollowingController, nitwitapi",
+                    "method": "AddFollowing"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "FollowingItem",
+                "uriTemplate": "/users/{followerUsername}/following/{followingUsername}",
+                "delete": {
+                    "type": "nitwitapi.Controllers.FollowingController, nitwitapi",
+                    "method": "DeleteFollowing"
+                },
+                "description": ""
+            },
+            {
+                "identifier": "ToDos",
+                "uriTemplate": "/todos",
+                "get": {
+                    "type": "nitwitapi.Controllers.ToDoController, nitwitapi",
+                    "method": "GetAllToDos"
+                },
+                "post": {
+                    "type": "nitwitapi.Controllers.ToDoController, nitwitapi",
+                    "method": "AddToDo"
+                },
+                "description": ""
+            }
+        ]
+    }
+}
