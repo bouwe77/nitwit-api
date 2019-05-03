@@ -11,7 +11,7 @@ namespace nitwitapi.Controllers
         {
             var response = new Response(HttpStatusCode.Ok, "text/plain")
             {
-                MessageBody = new MemoryStream(Encoding.UTF8.GetBytes("NITWIT API"))
+                MessageBody = new MemoryStream(Encoding.UTF8.GetBytes("<h1>NITWIT API</h1> <a href=\"https://github.com/bouwe77/nitwit-api/blob/master/README.md\">API Documentation</a>"))
             };
 
             return response;
