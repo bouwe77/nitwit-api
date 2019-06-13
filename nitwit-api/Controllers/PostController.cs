@@ -162,6 +162,27 @@ namespace nitwitapi.Controllers
             return response;
         }
 
+        public Response DeleteAllPosts()
+        {
+            // Check "password"
+            var pass = Request.GetQueryStringValue("pass");
+            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
+                return new Response(HttpStatusCode.MethodNotAllowed);
+
+            using (var userRepository = CreateUserRepository())
+            {
+                var users = userRepository.GetAll();
+                foreach (var user in users)
+                {
+                    var response = DeleteAllPosts(user.Name);
+                    if (response.StatusCode != HttpStatusCode.NoContent)
+                        return response;
+                }
+
+                return new Response(HttpStatusCode.NoContent);
+            }
+        }
+
         public Response DeleteAllPosts(string username)
         {
             // Check "password"

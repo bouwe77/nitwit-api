@@ -119,6 +119,15 @@
                     "method": "AddToDo"
                 },
                 "description": ""
+            },
+            {
+                "identifier": "Posts2",
+                "uriTemplate": "/posts",
+                "delete": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "DeleteAllPosts"
+                },
+                "description": ""
             }
         ]
     }
