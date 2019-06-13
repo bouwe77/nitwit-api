@@ -16,7 +16,7 @@ namespace Data.Entities
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "post")]
+        [JsonProperty(PropertyName = "content")]
         public string Content { get; set; }
 
         [JsonIgnore]

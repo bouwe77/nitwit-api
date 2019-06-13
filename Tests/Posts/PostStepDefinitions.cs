@@ -66,7 +66,7 @@ namespace Tests.Posts
 
         internal async Task<HttpResponseMessage> WHEN_PostIsAdded(string username, string post)
         {
-            var jsonString = "{ \"post\": \"" + post + "\" }";
+            var jsonString = "{ \"content\": \"" + post + "\" }";
             return await WHEN_PostIsAddedWithJsonString(username, jsonString);
         }
 
@@ -172,7 +172,7 @@ namespace Tests.Posts
             var postIds = new List<string>();
             foreach (var postContent in postContents)
             {
-                var json = new StringContent("{ \"post\": \"" + postContent + "\" }");
+                var json = new StringContent("{ \"content\": \"" + postContent + "\" }");
                 var response = await _asserter.SendAndAssertPOSTRequest($"/users/{username}/posts", json, HttpStatusCode.Created);
 
                 var postId = _asserter.GetLocationUri(response).Split('/').Last();

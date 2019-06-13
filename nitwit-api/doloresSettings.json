@@ -90,6 +90,15 @@
                 "description": ""
             },
             {
+                "identifier": "EveryoneFollowsEachOther",
+                "uriTemplate": "/following",
+                "post": {
+                    "type": "nitwitapi.Controllers.FollowingController, nitwitapi",
+                    "method": "EveryoneFollowsEachOther"
+                },
+                "description": ""
+            },
+            {
                 "identifier": "FollowingItem",
                 "uriTemplate": "/users/{followerUsername}/following/{followingUsername}",
                 "delete": {

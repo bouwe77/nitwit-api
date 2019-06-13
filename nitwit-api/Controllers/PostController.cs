@@ -120,13 +120,6 @@ namespace nitwitapi.Controllers
                     .Where(p => followers.Contains(p.UserId))
                     .OrderByDescending(p => p.CreatedAt)
                     .ToList();
-
-                var year = 2016;
-                var month = 1;
-                foreach (var post in posts)
-                {
-                    post.CreatedAt = new DateTime(year++, month++, 1);
-                }
             }
 
             var response = GetJsonResponse(posts);

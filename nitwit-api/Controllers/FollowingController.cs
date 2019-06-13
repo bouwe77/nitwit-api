@@ -117,5 +117,43 @@ namespace nitwitapi.Controllers
 
             return new Response(HttpStatusCode.NoContent);
         }
+
+        public Response EveryoneFollowsEachOther()
+        {
+            // Check "password"
+            var pass = Request.GetQueryStringValue("pass");
+            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
+                return new Response(HttpStatusCode.NotFound);
+
+            // Replace current Following data by data that indicates all current users are following each other.
+            using (var userRepository = CreateUserRepository())
+            using (var followingRepository = CreateFollowingRepository())
+            {
+                // Delete all current following data.
+                followingRepository.DeleteAll();
+
+                var users1 = userRepository.GetAll();
+                var users2 = userRepository.GetAll();
+                foreach (var user1 in users1)
+                {
+                    foreach (var user2 in users2)
+                    {
+                        if (user1.Id != user2.Id)
+                        {
+                            var following = new Following
+                            {
+                                UserId = user1.Id,
+                                FollowingUserId = user2.Id,
+                                CreatedAt = DateTime.UtcNow
+                            };
+                            followingRepository.Insert(following);
+                        }
+                    }
+                }
+            }
+
+                return new Response(HttpStatusCode.NoContent);
+
+        }
     }
 }

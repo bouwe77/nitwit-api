@@ -17,7 +17,12 @@ namespace nitwitapi.Controllers
 
         protected Response GetJsonResponse(object objectToSerializeToJson)
         {
-            string json = JsonConvert.SerializeObject(objectToSerializeToJson);
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            };
+
+            string json = JsonConvert.SerializeObject(objectToSerializeToJson, jsonSettings);
             var response = new Response(HttpStatusCode.Ok)
             {
                 MessageBody = new MemoryStream(Encoding.UTF8.GetBytes(json))
