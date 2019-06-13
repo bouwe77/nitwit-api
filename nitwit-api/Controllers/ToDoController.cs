@@ -55,5 +55,17 @@ namespace nitwitapi.Controllers
 
             return response;
         }
+
+        public Response DeleteAllToDos()
+        {
+            CheckPassword();
+
+            using (var todoRepository = CreateToDoRepository())
+            {
+                todoRepository.DeleteAll();
+            }
+
+            return new Response(HttpStatusCode.NoContent);
+        }
     }
 }

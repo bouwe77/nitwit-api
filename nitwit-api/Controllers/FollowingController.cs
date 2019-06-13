@@ -120,10 +120,7 @@ namespace nitwitapi.Controllers
 
         public Response EveryoneFollowsEachOther()
         {
-            // Check "password"
-            var pass = Request.GetQueryStringValue("pass");
-            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
-                return new Response(HttpStatusCode.NotFound);
+            CheckPassword();
 
             // Replace current Following data by data that indicates all current users are following each other.
             using (var userRepository = CreateUserRepository())
@@ -152,8 +149,29 @@ namespace nitwitapi.Controllers
                 }
             }
 
-                return new Response(HttpStatusCode.NoContent);
+            return new Response(HttpStatusCode.NoContent);
+        }
 
+        public Response DeleteAllFollowing()
+        {
+            CheckPassword();
+
+            using (var followingRepository = CreateFollowingRepository())
+            {
+                followingRepository.DeleteAll();
+            }
+
+            return new Response(HttpStatusCode.NoContent);
+        }
+
+        public Response GetAllFollowing()
+        {
+            using (var followingRepository = CreateFollowingRepository())
+            {
+                var following = followingRepository.GetAll();
+                var response = GetJsonResponse(following);
+                return response;
+            }
         }
     }
 }

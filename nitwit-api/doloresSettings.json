@@ -92,9 +92,17 @@
             {
                 "identifier": "EveryoneFollowsEachOther",
                 "uriTemplate": "/following",
+                "get": {
+                    "type": "nitwitapi.Controllers.FollowingController, nitwitapi",
+                    "method": "GetAllFollowing"
+                },
                 "post": {
                     "type": "nitwitapi.Controllers.FollowingController, nitwitapi",
                     "method": "EveryoneFollowsEachOther"
+                },
+                "delete": {
+                    "type": "nitwitapi.Controllers.FollowingController, nitwitapi",
+                    "method": "DeleteAllFollowing"
                 },
                 "description": ""
             },
@@ -118,11 +126,19 @@
                     "type": "nitwitapi.Controllers.ToDoController, nitwitapi",
                     "method": "AddToDo"
                 },
+                "delete": {
+                    "type": "nitwitapi.Controllers.ToDoController, nitwitapi",
+                    "method": "DeleteAllToDos"
+                },
                 "description": ""
             },
             {
                 "identifier": "Posts2",
                 "uriTemplate": "/posts",
+                "get": {
+                    "type": "nitwitapi.Controllers.PostController, nitwitapi",
+                    "method": "GetAllPosts"
+                },
                 "delete": {
                     "type": "nitwitapi.Controllers.PostController, nitwitapi",
                     "method": "DeleteAllPosts"

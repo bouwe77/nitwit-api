@@ -88,6 +88,22 @@ namespace nitwitapi.Controllers
             return response;
         }
 
+        public Response GetAllPosts()
+        {
+            // Read from database
+            var posts = new List<Post>();
+            using (var postRepository = CreatePostRepository())
+            {
+                posts = postRepository
+                    .GetAll()
+                    .ToList();
+            }
+
+            var response = GetJsonResponse(posts);
+
+            return response;
+        }
+
         public Response GetTimeline(string username)
         {
             // Validate
@@ -164,31 +180,18 @@ namespace nitwitapi.Controllers
 
         public Response DeleteAllPosts()
         {
-            // Check "password"
-            var pass = Request.GetQueryStringValue("pass");
-            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
-                return new Response(HttpStatusCode.MethodNotAllowed);
+            CheckPassword();
 
-            using (var userRepository = CreateUserRepository())
+            using (var postRepository = CreatePostRepository())
             {
-                var users = userRepository.GetAll();
-                foreach (var user in users)
-                {
-                    var response = DeleteAllPosts(user.Name);
-                    if (response.StatusCode != HttpStatusCode.NoContent)
-                        return response;
-                }
-
+                postRepository.DeleteAll();
                 return new Response(HttpStatusCode.NoContent);
             }
         }
 
         public Response DeleteAllPosts(string username)
         {
-            // Check "password"
-            var pass = Request.GetQueryStringValue("pass");
-            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
-                return new Response(HttpStatusCode.MethodNotAllowed);
+            CheckPassword();
 
             // Validate
             if (!IsUsernameValid(username))

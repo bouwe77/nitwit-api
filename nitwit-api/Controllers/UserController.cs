@@ -132,10 +132,7 @@ namespace nitwitapi.Controllers
 
         public Response DeleteUser(string username)
         {
-            // Check "password"
-            var pass = Request.GetQueryStringValue("pass");
-            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
-                return new Response(HttpStatusCode.MethodNotAllowed);
+            CheckPassword();
 
             // Validate
             if (!IsUsernameValid(username))
@@ -158,10 +155,7 @@ namespace nitwitapi.Controllers
 
         public Response DeleteAllUsers()
         {
-            // Check "password"
-            var pass = Request.GetQueryStringValue("pass");
-            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
-                return new Response(HttpStatusCode.MethodNotAllowed);
+            CheckPassword();
 
             // Delete from database.
             using (var repo = CreateUserRepository())

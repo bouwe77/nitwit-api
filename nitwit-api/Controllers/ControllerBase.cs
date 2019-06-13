@@ -1,6 +1,7 @@
 ﻿using Data;
 using Data.Entities;
 using Dolores;
+using Dolores.Exceptions;
 using Dolores.Http;
 using Dolores.Responses;
 using Newtonsoft.Json;
@@ -14,6 +15,14 @@ namespace nitwitapi.Controllers
     {
         private string _databaseFilePath => @"D:\home\site\wwwroot\nitwit.sqlite";
         private static Regex _usernameRegex = new Regex("^[a-zA-Z0-9]+$", RegexOptions.Compiled);
+
+        protected void CheckPassword()
+        {
+            // Check "password"
+            var pass = Request.GetQueryStringValue("pass");
+            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
+                throw new HttpMethodNotAllowedException(string.Empty);
+        }
 
         protected Response GetJsonResponse(object objectToSerializeToJson)
         {
