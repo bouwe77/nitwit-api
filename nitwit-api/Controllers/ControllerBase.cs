@@ -68,6 +68,16 @@ namespace nitwitapi.Controllers
             return new SqliteRepository<ToDo>(_databaseFilePath);
         }
 
+        protected SqliteRepository<Mention> CreateMentionRepository()
+        {
+            return new SqliteRepository<Mention>(_databaseFilePath);
+        }
+
+        protected SqliteRepository<Reply> CreateReplyRepository()
+        {
+            return new SqliteRepository<Reply>(_databaseFilePath);
+        }
+
         protected bool IsPostContentValid(string post)
         {
             return !string.IsNullOrWhiteSpace(post) &&

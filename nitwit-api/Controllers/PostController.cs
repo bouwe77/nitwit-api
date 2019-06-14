@@ -1,7 +1,9 @@
-﻿using Data.Entities;
+﻿using Data;
+using Data.Entities;
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +51,9 @@ namespace nitwitapi.Controllers
                 newPost.Username = user.Name;
                 newPost.UserId = user.Id;
                 newPost.CreatedAt = DateTime.Now;
+
+                SaveMentions(newPost);
+                SaveReplies(newPost);
 
                 // Save to database
                 postRepository.Insert(newPost);
@@ -250,6 +255,56 @@ namespace nitwitapi.Controllers
             }
 
             return new Response(HttpStatusCode.NoContent);
+        }
+
+        private void SaveReplies(Post newPost)
+        {
+            var repliedUsernames = new ReplyLogic().GetRepliedUsernames(newPost.Content);
+
+            if (!repliedUsernames.Any())
+                return;
+
+            using (var userRepository = CreateUserRepository())
+            using (var replyRepository = CreateReplyRepository())
+            {
+                foreach (var username in repliedUsernames)
+                {
+                    var user = userRepository
+                        .Find(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if (user != null)
+                    {
+                        var reply = new Reply { PostId = newPost.Id, RepliedUserId = user.Id };
+                        replyRepository.Insert(reply);
+                    }
+                }
+            }
+        }
+
+        private void SaveMentions(Post newPost)
+        {
+            var mentionedUsernames = new MentionLogic().GetMentionedUsernames(newPost.Content);
+
+            if (!mentionedUsernames.Any())
+                return;
+
+            using (var userRepository = CreateUserRepository())
+            using (var mentionRepository = CreateMentionRepository())
+            {
+                foreach (var username in mentionedUsernames)
+                {
+                    var user = userRepository
+                        .Find(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if (user != null)
+                    {
+                        var mention = new Mention { PostId = newPost.Id, MentionedUserId = user.Id };
+                        mentionRepository.Insert(mention);
+                    }
+                }
+            }
         }
     }
 }
