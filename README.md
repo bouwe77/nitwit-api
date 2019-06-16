@@ -4,40 +4,9 @@
 
 The API's endpoint can be found at https://nitwit-api.azurewebsites.net
 
-> When calling this API, replace the "john" username by your own.
+> When calling this API, in the examples below replace the "john" username by your own.
 
 ## Resources
-
-### Users
-
-Create a user:
-
-```
-  POST /users
-  { "user": "john" }
-```
-
-Retrieve all users:
-
-```
-  GET /users
-```
-
-
-Retrieve a user:
-
-```
-  GET /users/john
-```
-
-
-Delete a user:
-
-```
-  DELETE /users/john
-```
-
-
 
 ### Posts
 
