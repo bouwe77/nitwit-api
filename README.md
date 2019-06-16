@@ -1,6 +1,14 @@
 # Nitwit API documentation
 
-## Users
+## Introduction
+
+The API's endpoint can be found at https://nitwit-api.azurewebsites.net
+
+> When calling this API, replace the "john" username by your own.
+
+## Resources
+
+### Users
 
 Create a user:
 
@@ -31,7 +39,7 @@ Delete a user:
 
 
 
-## Posts
+### Posts
 
 Create a post:
 
@@ -63,7 +71,7 @@ Delete a post:
 
 
 
-## Timeline
+### Timeline
 
 Retrieve timeline of a user, i.e. all posts of the user and of those he/she is following:
 
@@ -73,7 +81,7 @@ Retrieve timeline of a user, i.e. all posts of the user and of those he/she is f
 
 
 
-## Following
+### Following
 
 Follow another user, i.e. John starts to follow Jack:
 
