@@ -14,7 +14,7 @@ Create a post:
 
 ```
   POST /users/john/posts
-  { "post": "This is my first post! :)" }
+  { "content": "This is my first post! :)" }
 ```
 
 
