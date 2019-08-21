@@ -55,8 +55,12 @@ namespace nitwitapi.Controllers
                 SaveMentions(newPost);
                 SaveReplies(newPost);
 
-                // Save to database
+                // Insert post into database.
                 postRepository.Insert(newPost);
+
+                // Update the user's TimelineEtagVersion because its timeline has changed.
+                user.TimelineEtagVersion = IdGenerator.GetId();
+                userRepository.Update(user);
             }
 
             return new CreatedResponse($"/users/{newPost.Id}");
@@ -119,16 +123,34 @@ namespace nitwitapi.Controllers
                 return badRequestResponse;
             }
 
-            // Read from database
-            var posts = new List<Post>();
+            // Get the user from the database.
+            string currentTimelineEtag;
+            User user;
             using (var userRepository = CreateUserRepository())
-            using (var followingRepository = CreateFollowingRepository())
-            using (var postRepository = CreatePostRepository())
             {
-                var user = userRepository.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
+                user = userRepository.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (user == null)
                     return new Response(HttpStatusCode.NotFound);
 
+                currentTimelineEtag = user.TimelineEtagVersion;
+            }
+
+            // Get the If-Not_Match ETag from the request and if present, 
+            // compare against the current timeline version number.
+            var requestedTimelineEtag = Request.GetHeaderValue(HttpRequestHeaderFields.IfNoneMatch);
+            if (!string.IsNullOrWhiteSpace(requestedTimelineEtag))
+            {
+                // If the requested ETag is equal to the current timeline version number 
+                // the client is already up to date and no response data needs to be sent.
+                if (requestedTimelineEtag.Equals(currentTimelineEtag, StringComparison.OrdinalIgnoreCase))
+                    return new Response(HttpStatusCode.NotModified);
+            }
+
+            // Read from database
+            var posts = new List<Post>();
+            using (var followingRepository = CreateFollowingRepository())
+            using (var postRepository = CreatePostRepository())
+            {
                 var followers = followingRepository
                     .GetAll()
                     .Where(f => f.UserId.Equals(user.Id, StringComparison.OrdinalIgnoreCase))
@@ -144,6 +166,7 @@ namespace nitwitapi.Controllers
             }
 
             var response = GetJsonResponse(posts);
+            response.SetHeader("ETag", currentTimelineEtag);
 
             return response;
         }
@@ -275,8 +298,13 @@ namespace nitwitapi.Controllers
 
                     if (user != null)
                     {
+                        // Insert a reply for the post/user combination.
                         var reply = new Reply { PostId = newPost.Id, RepliedUserId = user.Id };
                         replyRepository.Insert(reply);
+
+                        // Update the user's TimelineEtagVersion because its timeline has changed.
+                        user.TimelineEtagVersion = IdGenerator.GetId();
+                        userRepository.Update(user);
                     }
                 }
             }
@@ -300,8 +328,13 @@ namespace nitwitapi.Controllers
 
                     if (user != null)
                     {
+                        // Insert a mention for the post/user combination.
                         var mention = new Mention { PostId = newPost.Id, MentionedUserId = user.Id };
                         mentionRepository.Insert(mention);
+
+                        // Update the user's TimelineEtagVersion because its timeline has changed.
+                        user.TimelineEtagVersion = IdGenerator.GetId();
+                        userRepository.Update(user);
                     }
                 }
             }

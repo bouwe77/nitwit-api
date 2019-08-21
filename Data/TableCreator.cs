@@ -11,6 +11,8 @@ namespace Data
             connection.CreateTable<Post>();
             connection.CreateTable<Following>();
             connection.CreateTable<ToDo>();
+            connection.CreateTable<Reply>();
+            connection.CreateTable<Mention>();
         }
     }
 }

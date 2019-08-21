@@ -14,7 +14,7 @@ namespace nitwitapi.Controllers
     public abstract class ControllerBase : DoloresHandler
     {
         private string _databaseFilePath => @"D:\home\site\wwwroot\nitwit.sqlite";
-        private static Regex _usernameRegex = new Regex("^[a-zA-Z0-9]+$", RegexOptions.Compiled);
+        private static Regex _usernameRegex = new Regex(Constants.ValidUsernameRegexForValidation, RegexOptions.Compiled);
 
         protected void CheckPassword()
         {

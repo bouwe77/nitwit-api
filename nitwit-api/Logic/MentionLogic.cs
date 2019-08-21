@@ -21,9 +21,11 @@ namespace nitwitapi.Logic
 
             var words2 = words.Skip(indexOfNormalWord);
 
-            var mentionedUsernames = words2.Where(word => word.StartsWith("@"));
-
-            return mentionedUsernames.Select(username => username.Replace("@", string.Empty));
+            var mentionedUsernames = words2
+                .Where(word => word.StartsWith("@"))
+                .KeepAlphanumericCharacters();
+                
+            return mentionedUsernames;
         }
     }
 }

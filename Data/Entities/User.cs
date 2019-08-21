@@ -22,5 +22,8 @@ namespace Data.Entities
 
         [JsonProperty(PropertyName = "created")]
         public DateTime CreatedAt { get; set; }
+
+        [JsonIgnore]
+        public string TimelineEtagVersion { get; set; }
     }
 }

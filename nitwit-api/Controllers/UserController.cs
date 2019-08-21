@@ -1,7 +1,9 @@
-﻿using Data.Entities;
+﻿using Data;
+using Data.Entities;
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,16 +94,16 @@ namespace nitwitapi.Controllers
                 return response;
             }
 
-            // Get from database.
             using (var repo = CreateUserRepository())
             {
+                // Check user already exists.
                 var existingUser = repo.GetAll().SingleOrDefault(u => u.Name.Equals(newUser.Name, StringComparison.OrdinalIgnoreCase));
                 if (existingUser != null)
                     return new Response(HttpStatusCode.Conflict);
 
+                // Save new user to database
                 newUser.CreatedAt = DateTime.Now;
-
-                // Save to database
+                newUser.TimelineEtagVersion = IdGenerator.GetId();
                 repo.Insert(newUser);
             }
 

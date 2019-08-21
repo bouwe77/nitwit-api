@@ -36,6 +36,7 @@ namespace Tests.Logic
                 new TestCase { Content = "hoi @henk", ExpectedUsernames = new List<string> { "henk" } },
                 new TestCase { Content = "hoi @henk moio", ExpectedUsernames = new List<string> { "henk" } },
                 new TestCase { Content = "hoi @henk moio @piet", ExpectedUsernames = new List<string> { "henk", "piet" } },
+                new TestCase { Content = "hoi @henk, @piet en @kees", ExpectedUsernames = new List<string> { "henk", "piet", "kees" } },
             };
         }
     }
