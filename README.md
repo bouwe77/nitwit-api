@@ -67,10 +67,11 @@ Unfollow a user, i.e. John unfollows Jack:
 ```
 
 
-Retrieve all users and indicate the following status for the given user.
-i.e. for the retrieved users you can see whether John follows that user
+Retrieve all users (except the given user) and for each user indicate that user is following
+the given user and vice versa.
+I.e. for the retrieved users you can see whether John follows that user
 and/or whether that user is following John:
 
 ```
-  GET /users?user=john
+  GET /users/john/following
 ```

@@ -3,6 +3,7 @@ using Data.Entities;
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Extensions;
 using nitwitapi.Logic;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ namespace nitwitapi.Controllers
 
             using (var userRepository = CreateUserRepository())
             using (var postRepository = CreatePostRepository())
+            using (var followingRepository = CreateFollowingRepository())
             {
                 var user = userRepository.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (user == null)
@@ -61,6 +63,15 @@ namespace nitwitapi.Controllers
                 // Update the user's TimelineEtagVersion because its timeline has changed.
                 user.TimelineEtagVersion = IdGenerator.GetId();
                 userRepository.Update(user);
+
+                // Update the user's followers TimelineEtagVersion too because their timeline has also changed.
+                var followersOfPostingUser = followingRepository.Find(x => x.FollowingUserId == user.Id).Select(x => x.UserId);
+                foreach (var userId in followersOfPostingUser)
+                {
+                    var follower = userRepository.GetById(userId);
+                    follower.TimelineEtagVersion = IdGenerator.GetId();
+                    userRepository.Update(follower);
+                }
             }
 
             return new CreatedResponse($"/users/{newPost.Id}");
@@ -143,7 +154,11 @@ namespace nitwitapi.Controllers
                 // If the requested ETag is equal to the current timeline version number 
                 // the client is already up to date and no response data needs to be sent.
                 if (requestedTimelineEtag.Equals(currentTimelineEtag, StringComparison.OrdinalIgnoreCase))
-                    return new Response(HttpStatusCode.NotModified);
+                {
+                    var responseNotModified = new Response(HttpStatusCode.NotModified);
+                    responseNotModified.SetEtagHeader(currentTimelineEtag);
+                    return responseNotModified;
+                }
             }
 
             // Read from database
@@ -166,7 +181,7 @@ namespace nitwitapi.Controllers
             }
 
             var response = GetJsonResponse(posts);
-            response.SetHeader("ETag", currentTimelineEtag);
+            response.SetEtagHeader(currentTimelineEtag);
 
             return response;
         }

@@ -3,7 +3,6 @@ using Data.Entities;
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
-using nitwitapi.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +13,6 @@ namespace nitwitapi.Controllers
     {
         public Response GetAllUsers()
         {
-            // =============== Following =======================
-            var user = Request.GetQueryStringValue("user");
-            if (!string.IsNullOrWhiteSpace(user))
-                return GetFollowingInfoForUser(user);
-            // =================================================
-
             // Get from database.
             List<User> users;
             using (var repo = CreateUserRepository())
@@ -32,7 +25,7 @@ namespace nitwitapi.Controllers
             return response;
         }
 
-        private Response GetFollowingInfoForUser(string username)
+        public Response GetFollowingInfoForUser(string username)
         {
             // Validate
             if (!IsUsernameValid(username))
