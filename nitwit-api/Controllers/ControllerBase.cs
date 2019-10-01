@@ -1,4 +1,4 @@
-﻿using Data;
+﻿using Data.Repositories;
 using Data.Entities;
 using Dolores;
 using Dolores.Exceptions;
@@ -53,9 +53,9 @@ namespace nitwitapi.Controllers
             return new SqliteRepository<User>(_databaseFilePath);
         }
 
-        protected SqliteRepository<Post> CreatePostRepository()
+        protected PostRepository CreatePostRepository()
         {
-            return new SqliteRepository<Post>(_databaseFilePath);
+            return new PostRepository(_databaseFilePath);
         }
 
         protected SqliteRepository<Following> CreateFollowingRepository()

@@ -99,11 +99,18 @@ namespace nitwitapi.Controllers
             }
 
             // Delete from database.
+            using (var followingRepository = CreateFollowingRepository())
             using (var repo = CreateUserRepository())
             {
                 var user = repo.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (user != null)
+                {
+                    var followings = followingRepository.Find(x => x.FollowingUserId.Equals(user.Id, StringComparison.OrdinalIgnoreCase) ||
+                                                                   x.UserId.Equals(user.Id, StringComparison.OrdinalIgnoreCase));
+                    foreach (var following in followings) followingRepository.Delete(following);
+
                     repo.Delete(user);
+                }
             }
 
             return new Response(HttpStatusCode.NoContent);
@@ -114,8 +121,10 @@ namespace nitwitapi.Controllers
             CheckPassword();
 
             // Delete from database.
+            using (var followingRepository = CreateFollowingRepository())
             using (var repo = CreateUserRepository())
             {
+                followingRepository.DeleteAll();
                 repo.DeleteAll();
             }
 

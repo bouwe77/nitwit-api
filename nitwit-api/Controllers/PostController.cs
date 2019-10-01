@@ -110,6 +110,8 @@ namespace nitwitapi.Controllers
 
         public Response GetAllPosts()
         {
+            CheckPassword();
+
             // Read from database
             var posts = new List<Post>();
             using (var postRepository = CreatePostRepository())
@@ -146,7 +148,7 @@ namespace nitwitapi.Controllers
                 currentTimelineEtag = user.TimelineEtagVersion;
             }
 
-            // Get the If-Not_Match ETag from the request and if present, 
+            // Get the If-Not-Match ETag from the request and if present, 
             // compare against the current timeline version number.
             var requestedTimelineEtag = Request.GetHeaderValue(HttpRequestHeaderFields.IfNoneMatch);
             if (!string.IsNullOrWhiteSpace(requestedTimelineEtag))
@@ -166,18 +168,7 @@ namespace nitwitapi.Controllers
             using (var followingRepository = CreateFollowingRepository())
             using (var postRepository = CreatePostRepository())
             {
-                var followers = followingRepository
-                    .GetAll()
-                    .Where(f => f.UserId.Equals(user.Id, StringComparison.OrdinalIgnoreCase))
-                    .Select(f => f.FollowingUserId)
-                    .ToList();
-                followers.Add(user.Id);
-
-                posts = postRepository
-                    .GetAll()
-                    .Where(p => followers.Contains(p.UserId))
-                    .OrderByDescending(p => p.CreatedAt)
-                    .ToList();
+                posts = postRepository.GetTimeline(user.Id).ToList();
             }
 
             var response = GetJsonResponse(posts);
@@ -225,9 +216,14 @@ namespace nitwitapi.Controllers
         {
             CheckPassword();
 
+            using (var mentionRepository = CreateMentionRepository())
+            using (var replyRepository = CreateReplyRepository())
             using (var postRepository = CreatePostRepository())
             {
+                mentionRepository.DeleteAll();
+                replyRepository.DeleteAll();
                 postRepository.DeleteAll();
+
                 return new Response(HttpStatusCode.NoContent);
             }
         }
@@ -247,6 +243,8 @@ namespace nitwitapi.Controllers
             // Delete from database
             using (var userRepository = CreateUserRepository())
             using (var postRepository = CreatePostRepository())
+            using (var mentionRepository = CreateMentionRepository())
+            using (var replyRepository = CreateReplyRepository())
             {
                 var user = userRepository.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (user == null)
@@ -254,8 +252,13 @@ namespace nitwitapi.Controllers
 
                 // Delete posts
                 var posts = postRepository.GetAll().Where(p => p.UserId == user.Id).ToList();
-                foreach (var post in posts)
-                    postRepository.Delete(post);
+                foreach (var post in posts) postRepository.Delete(post);
+
+                // Delete mentions and replies.
+                var mentions = mentionRepository.GetAll().Where(m => posts.Select(p => p.Id).Contains(m.PostId));
+                foreach (var mention in mentions) mentionRepository.Delete(mention);
+                var replies = replyRepository.GetAll().Where(r => posts.Select(p => p.Id).Contains(r.PostId));
+                foreach (var reply in replies) replyRepository.Delete(reply);
             }
 
             return new Response(HttpStatusCode.NoContent);
@@ -280,6 +283,8 @@ namespace nitwitapi.Controllers
             // Delete from database
             using (var userRepository = CreateUserRepository())
             using (var postRepository = CreatePostRepository())
+            using (var mentionRepository = CreateMentionRepository())
+            using (var replyRepository = CreateReplyRepository())
             {
                 var user = userRepository.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (user == null)
@@ -288,6 +293,12 @@ namespace nitwitapi.Controllers
                 var post = postRepository.GetById(postId);
                 if (post == null || post.UserId != user.Id)
                     return new Response(HttpStatusCode.NoContent);
+
+                // Delete mentions and replies.
+                var mentions = mentionRepository.Find(m => m.PostId == post.Id);
+                foreach (var mention in mentions) mentionRepository.Delete(mention);
+                var replies = replyRepository.Find(r => r.PostId == post.Id);
+                foreach (var reply in replies) replyRepository.Delete(reply);
 
                 postRepository.Delete(post);
             }

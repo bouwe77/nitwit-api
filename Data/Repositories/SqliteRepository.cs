@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Data
+namespace Data.Repositories
 {
     public class SqliteRepository<TEntity> : IDisposable where TEntity : ISqliteEntity, new()
     {
-        private readonly SQLiteConnection _sqliteConnection;
+        protected readonly SQLiteConnection _sqliteConnection;
 
         public SqliteRepository(string databaseFilePath)
         {
