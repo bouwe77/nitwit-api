@@ -25,45 +25,6 @@ namespace nitwitapi.Controllers
             return response;
         }
 
-        public Response GetFollowingInfoForUser(string username)
-        {
-            // Validate
-            if (!IsUsernameValid(username))
-            {
-                var response = new Response(HttpStatusCode.BadRequest);
-                response.Json(new { Message = "User name invalid" });
-                return response;
-            }
-
-            // Get from database.
-            List<User> allUsersExceptUserFromRequest;
-            using (var userRepo = CreateUserRepository())
-            using (var followingRepo = CreateFollowingRepository())
-            {
-                var userFromRequest = userRepo.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
-                if (userFromRequest == null)
-                    return new Response(HttpStatusCode.NotFound);
-
-                allUsersExceptUserFromRequest = userRepo.GetAll().Where(u => !u.Name.Equals(username, StringComparison.OrdinalIgnoreCase)).ToList();
-
-                var usersYouAreFollowing = followingRepo.GetAll().Where(f => f.UserId == userFromRequest.Id).Select(f => f.FollowingUserId).ToList();
-                var usersFollowingYou = followingRepo.GetAll().Where(f => f.FollowingUserId == userFromRequest.Id).Select(f => f.UserId).ToList();
-
-                var users = new List<object>();
-                foreach (var user in allUsersExceptUserFromRequest)
-                {
-                    users.Add(new
-                    {
-                        user = user.Name,
-                        youAreFollowing = usersYouAreFollowing.Contains(user.Id),
-                        isFollowingYou = usersFollowingYou.Contains(user.Id)
-                    });
-                }
-
-                return GetJsonResponse(users);
-            }
-        }
-
         public Response AddUser()
         {
             // Deserialize
