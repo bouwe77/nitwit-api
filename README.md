@@ -8,6 +8,16 @@ The API's endpoint can be found at https://nitwit-api.azurewebsites.net
 
 ## Resources
 
+### Authentication
+
+Authenticate:
+
+```
+  POST /authentication
+  { "username": "john", "password": "pass123" }
+```
+
+
 ### Posts
 
 Create a post:

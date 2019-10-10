@@ -148,6 +148,15 @@
                     "method": "DeleteAllPosts"
                 },
                 "description": ""
+            },
+            {
+                "identifier": "Authentication",
+                "uriTemplate": "/authentication",
+                "post": {
+                    "type": "nitwitapi.Controllers.AuthenticationController, nitwitapi",
+                    "method": "Authenticate"
+                },
+                "description": ""
             }
         ]
     }

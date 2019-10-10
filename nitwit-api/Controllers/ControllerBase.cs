@@ -96,5 +96,10 @@ namespace nitwitapi.Controllers
                    username.Length <= 100 &&
                    _usernameRegex.IsMatch(username);
         }
+
+        protected bool IsPasswordValid(string password)
+        {
+            return !string.IsNullOrWhiteSpace(password) && password.Length <= 50;
+        }
     }
 }

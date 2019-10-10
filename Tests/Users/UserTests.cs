@@ -118,7 +118,7 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _u.WHEN_UserIsCreated(null);
+            var response = await _u.WHEN_UserIsCreated(null, "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -131,7 +131,7 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _u.WHEN_UserIsCreated(string.Empty);
+            var response = await _u.WHEN_UserIsCreated(string.Empty, "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -145,7 +145,7 @@ namespace Tests.Users
             var veryLongUsername = new string('A', 101);
 
             // Act
-            var response = await _u.WHEN_UserIsCreated(veryLongUsername);
+            var response = await _u.WHEN_UserIsCreated(veryLongUsername, "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -172,7 +172,7 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreTheFollowingUsers("henk");
 
             // Act
-            var response = await _u.WHEN_UserIsCreated("henk");
+            var response = await _u.WHEN_UserIsCreated("henk", "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);
@@ -185,7 +185,7 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreTheFollowingUsers("henk");
 
             // Act
-            var response = await _u.WHEN_UserIsCreated("hEnK");
+            var response = await _u.WHEN_UserIsCreated("hEnK", "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);
@@ -198,7 +198,7 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _u.WHEN_UserIsCreated("henk123");
+            var response = await _u.WHEN_UserIsCreated("henk123", "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Created);
@@ -214,7 +214,7 @@ namespace Tests.Users
             var veryLongUsername = new string('A', 100);
 
             // Act
-            var response = await _u.WHEN_UserIsCreated(veryLongUsername);
+            var response = await _u.WHEN_UserIsCreated(veryLongUsername, "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Created);

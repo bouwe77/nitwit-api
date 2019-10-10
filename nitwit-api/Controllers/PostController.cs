@@ -52,7 +52,7 @@ namespace nitwitapi.Controllers
 
                 newPost.Username = user.Name;
                 newPost.UserId = user.Id;
-                newPost.CreatedAt = DateTime.Now;
+                newPost.CreatedAt = DateTime.UtcNow;
 
                 SaveMentions(newPost);
                 SaveReplies(newPost);

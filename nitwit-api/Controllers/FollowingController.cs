@@ -102,7 +102,7 @@ namespace nitwitapi.Controllers
                 {
                     newFollowing.UserId = user.Id;
                     newFollowing.FollowingUserId = followingUser.Id;
-                    newFollowing.CreatedAt = DateTime.Now;
+                    newFollowing.CreatedAt = DateTime.UtcNow;
 
                     // Save to database
                     followingRepository.Insert(newFollowing);

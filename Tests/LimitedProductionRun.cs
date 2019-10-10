@@ -19,27 +19,27 @@ namespace Tests
         [TestMethod]
         public async Task Crud_User()
         {
-            const string user = "bouwe123456789";
+            const string username = "bouwe123456789";
 
             // Delete the user, just in case.
-            await _asserter.SendAndAssertDELETERequest($"/users/{user}?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
+            await _asserter.SendAndAssertDELETERequest($"/users/{username}?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
 
             // Check the user indeed does NOT exist.
             var response = await _asserter.SendAndAssertGETRequest("/users", HttpStatusCode.OK);
             var content = await response.Content.ReadAsStringAsync();
-            Assert.IsFalse(content.Contains(user), $"User {user} still exists, which is unexpected");
+            Assert.IsFalse(content.Contains(username), $"User {username} still exists, which is unexpected");
 
             // Create the user.
-            var json = new StringContent("{ \"user\": \"" + user + "\" }");
-            await _asserter.SendAndAssertPOSTRequest("/users", json, HttpStatusCode.Created, $"/users/{user}");
+            var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"welkom123\" }");
+            await _asserter.SendAndAssertPOSTRequest("/users", json, HttpStatusCode.Created, $"/users/{username}");
 
             // Check the user indeed exists now.
             response = await _asserter.SendAndAssertGETRequest("/users", HttpStatusCode.OK);
             content = await response.Content.ReadAsStringAsync();
-            Assert.IsTrue(content.Contains(user), $"User does not exist, which is unexpected");
+            Assert.IsTrue(content.Contains(username), $"User does not exist, which is unexpected");
 
             // Delete the user, to clean up.
-            await _asserter.SendAndAssertDELETERequest($"/users/{user}?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
+            await _asserter.SendAndAssertDELETERequest($"/users/{username}?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
         }
     }
 }

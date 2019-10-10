@@ -41,10 +41,10 @@ namespace nitwitapi.Controllers
             }
 
             // Validate
-            if (newUser == null || !IsUsernameValid(newUser.Name))
+            if (newUser == null || !IsUsernameValid(newUser.Name) || !IsPasswordValid(newUser.Password))
             {
                 var response = new Response(HttpStatusCode.BadRequest);
-                response.Json(new { Message = "User name invalid" });
+                response.Json(new { Message = "User invalid" });
                 return response;
             }
 
@@ -56,8 +56,13 @@ namespace nitwitapi.Controllers
                     return new Response(HttpStatusCode.Conflict);
 
                 // Save new user to database
-                newUser.CreatedAt = DateTime.Now;
+                newUser.CreatedAt = DateTime.UtcNow;
                 newUser.TimelineEtagVersion = IdGenerator.GetId();
+
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
+                newUser.PasswordHash = passwordHash;
+                newUser.Password = null;
+
                 repo.Insert(newUser);
             }
 

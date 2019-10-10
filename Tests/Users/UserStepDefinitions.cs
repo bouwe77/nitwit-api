@@ -48,9 +48,9 @@ namespace Tests.Users
             return await _asserter.SendGETRequest($"/users/{username}");
         }
 
-        public async Task<HttpResponseMessage> WHEN_UserIsCreated(string username)
+        public async Task<HttpResponseMessage> WHEN_UserIsCreated(string username, string password)
         {
-            var jsonString = "{ \"user\": \"" + username + "\" }";
+            var jsonString = "{ \"username\": \"" + username + "\", \"password\": \"" + password + "\" }";
             return await WHEN_UserIsCreatedWithJsonString(jsonString);
         }
 
@@ -70,9 +70,9 @@ namespace Tests.Users
             return await _asserter.SendDELETERequest($"/users?pass=z0BnkB7E2ET01qaN");
         }
 
-        public async Task THEN_ResponseContainsTheFollowingUsers(HttpResponseMessage response, params string[] users)
+        public async Task THEN_ResponseContainsTheFollowingUsers(HttpResponseMessage response, params string[] usernames)
         {
-            await AssertResponseContainsTheFollowingUsers(response, users);
+            await AssertResponseContainsTheFollowingUsers(response, usernames);
         }
 
         public async Task THEN_ResponseContainsNoUsers(HttpResponseMessage response)
@@ -80,9 +80,9 @@ namespace Tests.Users
             await AssertResponseContainsNoUsers(response);
         }
 
-        public async Task THEN_TheFollowingUsersExist(params string[] users)
+        public async Task THEN_TheFollowingUsersExist(params string[] usernames)
         {
-            await AssertTheFollowingUsersExist(users);
+            await AssertTheFollowingUsersExist(usernames);
         }
 
         public async Task THEN_NoUsersExist()
@@ -90,19 +90,19 @@ namespace Tests.Users
             await AssertNoUsersExist();
         }
 
-        private async Task CreateTheFollowingUsers(string[] users)
+        private async Task CreateTheFollowingUsers(string[] usernames)
         {
-            foreach (var user in users)
+            foreach (var username in usernames)
             {
-                var json = new StringContent("{ \"user\": \"" + user + "\" }");
+                var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"welkom123\" }");
                 await _asserter.SendAndAssertPOSTRequest("/users", json, HttpStatusCode.Created);
             }
         }
 
-        private async Task AssertTheFollowingUsersExist(string[] users)
+        private async Task AssertTheFollowingUsersExist(string[] usernames)
         {
             var response = await _asserter.SendAndAssertGETRequest("/users", HttpStatusCode.OK);
-            await AssertResponseContainsTheFollowingUsers(response, users);
+            await AssertResponseContainsTheFollowingUsers(response, usernames);
         }
 
         private async Task AssertNoUsersExist()
@@ -117,11 +117,11 @@ namespace Tests.Users
             Assert.AreEqual("[]", content);
         }
 
-        public async Task AssertResponseContainsTheFollowingUsers(HttpResponseMessage response, string[] users)
+        public async Task AssertResponseContainsTheFollowingUsers(HttpResponseMessage response, string[] usernames)
         {
             var content = await response.Content.ReadAsStringAsync();
             var stuff = content.Split("},{");
-            Assert.AreEqual(users.Count(), stuff.Count());
+            Assert.AreEqual(usernames.Count(), stuff.Count());
         }
 
         private async Task DeleteAllUsers()
