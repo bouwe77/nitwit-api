@@ -65,7 +65,7 @@ namespace Tests.Posts
         }
 
         [TestMethod]
-        public async Task AddPost_ReturnsBadRequest_WhenUsernameTooLong()
+        public async Task AddPost_ReturnsUnauthorized_WhenUsernameTooLong()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -75,11 +75,11 @@ namespace Tests.Posts
             var response = await _p.WHEN_PostIsAdded(veryLongUsername, "Lorem ipsum");
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
-        public async Task AddPost_ReturnsBadRequest_WhenUsernameHasInvalidCharacters()
+        public async Task AddPost_ReturnsUnauthorized_WhenUsernameHasInvalidCharacters()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -88,7 +88,7 @@ namespace Tests.Posts
             var response = await _p.WHEN_PostIsAdded("*5)%", "Lorem ipsum");
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
@@ -393,7 +393,7 @@ namespace Tests.Posts
         }
 
         [TestMethod]
-        public async Task DeleteAllPosts_ReturnsBadRequest_WhenUsernameHasInvalidCharacters()
+        public async Task DeleteAllPosts_ReturnsUnauthorized_WhenUsernameHasInvalidCharacters()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -402,11 +402,11 @@ namespace Tests.Posts
             var response = await _p.WHEN_AllPostsAreDeleted("(*7%");
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
-        public async Task DeleteAllPosts_ReturnsBadRequest_WhenUsernameIsTooLong()
+        public async Task DeleteAllPosts_ReturnsUnauthorized_WhenUsernameIsTooLong()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -416,7 +416,7 @@ namespace Tests.Posts
             var response = await _p.WHEN_AllPostsAreDeleted(veryLongUsername);
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
@@ -493,7 +493,7 @@ namespace Tests.Posts
         }
 
         [TestMethod]
-        public async Task DeletePost_ReturnsBadRequest_WhenUsernameHasInvalidCharacters()
+        public async Task DeletePost_ReturnsUnauthorized_WhenUsernameHasInvalidCharacters()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -502,11 +502,11 @@ namespace Tests.Posts
             var response = await _p.WHEN_OnePostIsDeleted("(*7%", "post1");
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
-        public async Task DeletePost_ReturnsBadRequest_WhenUsernameIsTooLong()
+        public async Task DeletePost_ReturnsUnauthorized_WhenUsernameIsTooLong()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -516,7 +516,7 @@ namespace Tests.Posts
             var response = await _p.WHEN_OnePostIsDeleted(veryLongUsername, "post1");
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]

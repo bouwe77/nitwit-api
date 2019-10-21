@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using nitwitapi;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,6 +30,9 @@ namespace Tests.Authentication_Authorization
         [TestMethod]
         public async Task UserIsAuthorizedToAccessProtectedUrls_AfterAuthenticatingSuccessfully()
         {
+            if (!Auth.Enabled)
+                return;
+
             // Arrange
             await _u.GIVEN_ThereAreTheFollowingUsers("john");
             var authResponse = await _a.GIVEN_UserIsAuthenticated("john");
@@ -47,6 +51,9 @@ namespace Tests.Authentication_Authorization
         [TestMethod]
         public async Task UserIsNotAuthorizedToAccessProtectedUrls_WhenNotAuthenticated()
         {
+            if (!Auth.Enabled)
+                return;
+
             // Arrange
             await _u.GIVEN_ThereAreTheFollowingUsers("john");
             var token = "hacketyhack";

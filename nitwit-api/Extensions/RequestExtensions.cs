@@ -10,6 +10,9 @@ namespace nitwitapi.Extensions
     {
         public static void CheckAuthorization(this Request request, string expectedUsername = null)
         {
+            if (!Auth.Enabled)
+                return;
+
             if (request == null)
                 throw Unauthorized();
 
