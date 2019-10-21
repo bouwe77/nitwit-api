@@ -1,4 +1,7 @@
-﻿using Dolores.Http;
+﻿using System;
+using Dolores.Exceptions;
+using Dolores.Http;
+using Dolores.Requests;
 using Dolores.Responses;
 
 namespace nitwitapi.Extensions

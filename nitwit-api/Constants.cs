@@ -4,5 +4,6 @@
     {
         public static string ValidUsernameRegexForValidation = "^[a-zA-Z0-9]+$";
         public static string ValidUsernameRegexForCleaning = "[^a-zA-Z0-9]";
+        public static string ApplicationFolder = @"D:\home\site\wwwroot\";
     }
 }

@@ -31,7 +31,7 @@ namespace Tests.Users
         public async Task GIVEN_ThereAreNoUsers()
         {
             // Delete all users.
-           await DeleteAllUsers();
+            await DeleteAllUsers();
 
             // Assert there are no users anymore.
             var response = await _asserter.SendAndAssertGETRequest("/users", HttpStatusCode.OK);
@@ -94,7 +94,7 @@ namespace Tests.Users
         {
             foreach (var username in usernames)
             {
-                var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"welkom123\" }");
+                var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"" + Constants.CorrectPassword + "\" }");
                 await _asserter.SendAndAssertPOSTRequest("/users", json, HttpStatusCode.Created);
             }
         }

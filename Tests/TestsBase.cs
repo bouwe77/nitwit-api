@@ -24,5 +24,15 @@ namespace Tests
                 Assert.Fail("Location header not found");
             }
         }
+
+        protected void THEN_ResponseBodyIsEmpty(HttpResponseMessage response)
+        {
+            Assert.IsTrue(string.IsNullOrEmpty(response.Content.ToString()));
+        }
+
+        protected void THEN_ResponseBodyIsNotEmpty(HttpResponseMessage response)
+        {
+            Assert.IsTrue(!string.IsNullOrEmpty(response.Content.ToString()));
+        }
     }
 }

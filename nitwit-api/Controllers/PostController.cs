@@ -128,6 +128,10 @@ namespace nitwitapi.Controllers
 
         public Response GetTimeline(string username)
         {
+            var meuk = Request.GetHeaderValue("Authorization");
+
+            Request.CheckAuthorization();
+
             // Validate
             if (!IsUsernameValid(username))
             {

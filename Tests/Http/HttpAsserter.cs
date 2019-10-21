@@ -3,17 +3,21 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Tests.Http
 {
     internal class HttpAsserter
     {
-        private readonly HttpClient _client;
-
-        public HttpAsserter()
+        private HttpClient HttpClient
         {
-            _client = ClientProvider.HttpClient;
+            get
+            {
+                var client = ClientProvider.HttpClient;
+                client.DefaultRequestHeaders.Clear();
+                return client;
+            }
         }
 
         public async Task<HttpResponseMessage> SendAndAssertGETRequest(string relativeUri, HttpStatusCode expectedStatusCode)
@@ -25,7 +29,15 @@ namespace Tests.Http
 
         public async Task<HttpResponseMessage> SendGETRequest(string relativeUri)
         {
-            var response = await _client.GetAsync(relativeUri);
+            var response = await HttpClient.GetAsync(relativeUri);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> SendGETRequest(string relativeUri, string token)
+        {
+            var client = HttpClient;
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            var response = await client.GetAsync(relativeUri);
             return response;
         }
 
@@ -37,27 +49,16 @@ namespace Tests.Http
 
             if (expectedLocationUri != null)
             {
-                var locationUri = GetLocationUri(response);
+                var locationUri = response.GetLocationUri();
                 Assert.AreEqual(expectedLocationUri, locationUri);
             }
 
             return response;
         }
 
-        public string GetLocationUri(HttpResponseMessage response)
-        {
-            string locationUri = null;
-            if (response.Headers.TryGetValues("Location", out var values))
-            {
-                locationUri = values.FirstOrDefault();
-            }
-
-            return locationUri;
-        }
-
         public async Task<HttpResponseMessage> SendPOSTRequest(string relativeUri, HttpContent content)
         {
-            var response = await _client.PostAsync(relativeUri, content);
+            var response = await HttpClient.PostAsync(relativeUri, content);
             return response;
         }
 
@@ -70,7 +71,7 @@ namespace Tests.Http
 
         public async Task<HttpResponseMessage> SendPUTRequest(string relativeUri, HttpContent content)
         {
-            var response = await _client.PutAsync(relativeUri, content);
+            var response = await HttpClient.PutAsync(relativeUri, content);
             return response;
         }
 
@@ -83,7 +84,7 @@ namespace Tests.Http
 
         public async Task<HttpResponseMessage> SendDELETERequest(string relativeUri)
         {
-            var response = await _client.DeleteAsync(relativeUri);
+            var response = await HttpClient.DeleteAsync(relativeUri);
             return response;
         }
     }

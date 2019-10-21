@@ -1,8 +1,11 @@
 ﻿using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Jwt;
 using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace nitwitapi.Controllers
 {
@@ -18,9 +21,7 @@ namespace nitwitapi.Controllers
             }
             catch (Exception)
             {
-                var response = new Response(HttpStatusCode.BadRequest);
-                response.Json(new { Message = "Request body is not a valid Authentication" });
-                return response;
+                return new Response(HttpStatusCode.Unauthorized);
             }
 
             // Validate
@@ -44,7 +45,14 @@ namespace nitwitapi.Controllers
                 }
             }
 
-            return new Response(HttpStatusCode.Ok);
+            // Authentication successful, send an OK response containing the JWT token.
+            var jwtToken = JwtHandler.CreateJwtToken();
+            var response = new Response(HttpStatusCode.Ok)
+            {
+                MessageBody = new MemoryStream(Encoding.UTF8.GetBytes(jwtToken))
+            };
+
+            return response;
         }
     }
 }

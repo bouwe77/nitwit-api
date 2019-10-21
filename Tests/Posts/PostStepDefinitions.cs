@@ -175,7 +175,7 @@ namespace Tests.Posts
                 var json = new StringContent("{ \"content\": \"" + postContent + "\" }");
                 var response = await _asserter.SendAndAssertPOSTRequest($"/users/{username}/posts", json, HttpStatusCode.Created);
 
-                var postId = _asserter.GetLocationUri(response).Split('/').Last();
+                var postId = response.GetLocationUri().Split('/').Last();
                 postIds.Add(postId);
             }
 

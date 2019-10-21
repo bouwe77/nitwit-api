@@ -30,7 +30,7 @@ namespace Tests
             Assert.IsFalse(content.Contains(username), $"User {username} still exists, which is unexpected");
 
             // Create the user.
-            var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"welkom123\" }");
+            var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"" + Constants.CorrectPassword + "\" }");
             await _asserter.SendAndAssertPOSTRequest("/users", json, HttpStatusCode.Created, $"/users/{username}");
 
             // Check the user indeed exists now.
