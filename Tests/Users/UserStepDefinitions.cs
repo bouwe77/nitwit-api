@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using nitwitapi;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -62,12 +63,12 @@ namespace Tests.Users
 
         public async Task<HttpResponseMessage> WHEN_UserIsDeleted(string username)
         {
-            return await _asserter.SendDELETERequest($"/users/{username}?pass=z0BnkB7E2ET01qaN");
+            return await _asserter.SendDELETERequest($"/users/{username}?pass={Secret.Password}");
         }
 
         public async Task<HttpResponseMessage> WHEN_AllUsersAreDeleted()
         {
-            return await _asserter.SendDELETERequest($"/users?pass=z0BnkB7E2ET01qaN");
+            return await _asserter.SendDELETERequest($"/users?pass={Secret.Password}");
         }
 
         public async Task THEN_ResponseContainsTheFollowingUsers(HttpResponseMessage response, params string[] usernames)
@@ -126,7 +127,7 @@ namespace Tests.Users
 
         private async Task DeleteAllUsers()
         {
-            await _asserter.SendAndAssertDELETERequest("/users?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
+            await _asserter.SendAndAssertDELETERequest($"/users?pass={Secret.Password}", HttpStatusCode.NoContent);
         }
     }
 }

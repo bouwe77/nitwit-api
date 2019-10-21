@@ -18,9 +18,8 @@ namespace nitwitapi.Controllers
 
         protected void CheckPassword()
         {
-            // Check "password"
             var pass = Request.GetQueryStringValue("pass");
-            if (string.IsNullOrWhiteSpace(pass) || pass != "z0BnkB7E2ET01qaN")
+            if (string.IsNullOrWhiteSpace(pass) || pass != Secret.Password)
                 throw new HttpMethodNotAllowedException(string.Empty);
         }
 

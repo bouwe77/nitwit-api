@@ -13,6 +13,8 @@ namespace nitwitapi.Controllers
     {
         public Response GetAllUsers()
         {
+            CheckPassword();
+
             // Get from database.
             List<User> users;
             using (var repo = CreateUserRepository())
@@ -27,6 +29,8 @@ namespace nitwitapi.Controllers
 
         public Response AddUser()
         {
+            CheckPassword();
+
             // Deserialize
             User newUser;
             try
@@ -71,6 +75,8 @@ namespace nitwitapi.Controllers
 
         public Response GetUser(string username)
         {
+            CheckPassword();
+
             // Validate
             if (!IsUsernameValid(username))
             {

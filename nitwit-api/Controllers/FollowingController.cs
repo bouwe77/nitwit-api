@@ -2,6 +2,7 @@
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace nitwitapi.Controllers
     {
         public Response GetFollowingInfoForUser(string username)
         {
+            // Note: this call requires no authentication.
+
             // Validate
             if (!IsUsernameValid(username))
             {
@@ -51,6 +54,11 @@ namespace nitwitapi.Controllers
 
         public Response AddFollowing(string username)
         {
+            if (!IsUsernameValid(username))
+                return new Response(HttpStatusCode.Unauthorized);
+
+            Request.CheckAuthorization(username);
+
             // Deserialize
             Following newFollowing;
             try
@@ -64,13 +72,7 @@ namespace nitwitapi.Controllers
                 return response;
             }
 
-            // Validate
-            if (!IsUsernameValid(username))
-            {
-                var badRequestResponse = new Response(HttpStatusCode.BadRequest);
-                badRequestResponse.Json(new { Message = "User name invalid" });
-                return badRequestResponse;
-            }
+            // Validation
             if (!IsUsernameValid(newFollowing.FollowingUsername))
             {
                 var badRequestResponse = new Response(HttpStatusCode.BadRequest);
@@ -114,13 +116,12 @@ namespace nitwitapi.Controllers
 
         public Response DeleteFollowing(string followerUsername, string followingUsername)
         {
-            // Validate
             if (!IsUsernameValid(followerUsername))
-            {
-                var badRequestResponse = new Response(HttpStatusCode.BadRequest);
-                badRequestResponse.Json(new { Message = "User name invalid" });
-                return badRequestResponse;
-            }
+                return new Response(HttpStatusCode.Unauthorized);
+
+            Request.CheckAuthorization(followerUsername);
+
+            // Validate
             if (!IsUsernameValid(followingUsername))
             {
                 var badRequestResponse = new Response(HttpStatusCode.BadRequest);
@@ -206,6 +207,8 @@ namespace nitwitapi.Controllers
 
         public Response GetAllFollowing()
         {
+            CheckPassword();
+
             using (var followingRepository = CreateFollowingRepository())
             {
                 var following = followingRepository.GetAll();

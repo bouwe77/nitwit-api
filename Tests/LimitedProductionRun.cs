@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using nitwitapi;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace Tests
             const string username = "bouwe123456789";
 
             // Delete the user, just in case.
-            await _asserter.SendAndAssertDELETERequest($"/users/{username}?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
+            await _asserter.SendAndAssertDELETERequest($"/users/{username}?pass={Secret.Password}", HttpStatusCode.NoContent);
 
             // Check the user indeed does NOT exist.
             var response = await _asserter.SendAndAssertGETRequest("/users", HttpStatusCode.OK);
@@ -39,7 +40,7 @@ namespace Tests
             Assert.IsTrue(content.Contains(username), $"User does not exist, which is unexpected");
 
             // Delete the user, to clean up.
-            await _asserter.SendAndAssertDELETERequest($"/users/{username}?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
+            await _asserter.SendAndAssertDELETERequest($"/users/{username}?pass={Secret.Password}", HttpStatusCode.NoContent);
         }
     }
 }

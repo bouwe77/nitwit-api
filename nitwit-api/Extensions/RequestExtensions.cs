@@ -8,7 +8,7 @@ namespace nitwitapi.Extensions
 {
     public static class RequestExtensions
     {
-        public static void CheckAuthorization(this Request request)
+        public static void CheckAuthorization(this Request request, string expectedUsername = null)
         {
             if (request == null)
                 throw Unauthorized();
@@ -28,7 +28,7 @@ namespace nitwitapi.Extensions
             jwtToken = jwtToken.Trim();
 
             // Check authorization for the given JWT token.
-            if (!JwtHandler.IsAuthorized(jwtToken))
+            if (!JwtHandler.IsAuthorized(jwtToken, expectedUsername))
                 throw Unauthorized();
         }
 

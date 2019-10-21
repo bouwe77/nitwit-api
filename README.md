@@ -17,6 +17,11 @@ Authenticate:
   { "username": "john", "password": "pass123" }
 ```
 
+If authenticated, the response contains a JWT token that you have to send with every subsequent request.
+You do this by adding an "Authentication" request header with the value "Bearer ...", where you replace 
+the three dots with the JWT token.
+
+
 
 ### Posts
 
@@ -35,14 +40,14 @@ Retrieve all posts of a user:
 ```
 
 
-Retrieve a post:
+Retrieve a single post:
 
 ```
   GET /users/john/posts/abc123
 ```
 
 
-Delete a post:
+Delete a single post:
 
 ```
   DELETE /users/john/posts/abc123

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using nitwitapi;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -78,7 +79,7 @@ namespace Tests.Posts
 
         public async Task<HttpResponseMessage> WHEN_AllPostsAreDeleted(string username)
         {
-            return await _asserter.SendDELETERequest($"/users/{username}/posts?pass=z0BnkB7E2ET01qaN");
+            return await _asserter.SendDELETERequest($"/users/{username}/posts?pass={Secret.Password}");
         }
 
         internal async Task<HttpResponseMessage> WHEN_OnePostIsDeleted(string username, string postId)
@@ -164,7 +165,7 @@ namespace Tests.Posts
 
         private async Task DeleteAllPosts(string username)
         {
-            await _asserter.SendAndAssertDELETERequest($"/users/{username}/posts?pass=z0BnkB7E2ET01qaN", HttpStatusCode.NoContent);
+            await _asserter.SendAndAssertDELETERequest($"/users/{username}/posts?pass={Secret.Password}", HttpStatusCode.NoContent);
         }
 
         private async Task<IEnumerable<string>> CreateTheFollowingPosts(string username, string[] postContents)

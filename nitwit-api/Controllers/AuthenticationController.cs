@@ -1,4 +1,5 @@
-﻿using Dolores.Http;
+﻿using Data.Entities;
+using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
 using nitwitapi.Jwt;
@@ -28,9 +29,10 @@ namespace nitwitapi.Controllers
             if (authentication == null || !IsUsernameValid(authentication.Username))
                 return new Response(HttpStatusCode.Unauthorized);
 
+            User user;
             using (var repo = CreateUserRepository())
             {
-                var user = repo.Find(u => u.Name.Equals(authentication.Username, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                user = repo.Find(u => u.Name.Equals(authentication.Username, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 if (user == null)
                     return new Response(HttpStatusCode.Unauthorized);
 
@@ -46,7 +48,7 @@ namespace nitwitapi.Controllers
             }
 
             // Authentication successful, send an OK response containing the JWT token.
-            var jwtToken = JwtHandler.CreateJwtToken();
+            var jwtToken = JwtHandler.CreateJwtToken(user.Name);
             var response = new Response(HttpStatusCode.Ok)
             {
                 MessageBody = new MemoryStream(Encoding.UTF8.GetBytes(jwtToken))

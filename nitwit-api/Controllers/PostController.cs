@@ -15,6 +15,11 @@ namespace nitwitapi.Controllers
     {
         public Response AddPost(string username)
         {
+            if (!IsUsernameValid(username))
+                return new Response(HttpStatusCode.Unauthorized);
+
+            Request.CheckAuthorization(username);
+
             // Deserialize
             Post newPost;
             try
@@ -29,12 +34,6 @@ namespace nitwitapi.Controllers
             }
 
             // Validate
-            if (!IsUsernameValid(username))
-            {
-                var response = new Response(HttpStatusCode.BadRequest);
-                response.Json(new { Message = "User name invalid" });
-                return response;
-            }
             if (!IsPostContentValid(newPost.Content))
             {
                 var response = new Response(HttpStatusCode.BadRequest);
@@ -79,6 +78,8 @@ namespace nitwitapi.Controllers
 
         public Response GetAllPosts(string username)
         {
+            // Note: this call requires no authentication.
+
             // Validate
             if (!IsUsernameValid(username))
             {
@@ -128,17 +129,10 @@ namespace nitwitapi.Controllers
 
         public Response GetTimeline(string username)
         {
-            var meuk = Request.GetHeaderValue("Authorization");
-
-            Request.CheckAuthorization();
-
-            // Validate
             if (!IsUsernameValid(username))
-            {
-                var badRequestResponse = new Response(HttpStatusCode.BadRequest);
-                badRequestResponse.Json(new { Message = "User name invalid" });
-                return badRequestResponse;
-            }
+                return new Response(HttpStatusCode.Unauthorized);
+
+            Request.CheckAuthorization(username);
 
             // Get the user from the database.
             string currentTimelineEtag;
@@ -183,6 +177,8 @@ namespace nitwitapi.Controllers
 
         public Response GetPost(string username, string postId)
         {
+            // Note: this call requires no authentication.
+
             // Validate
             if (!IsUsernameValid(username))
             {
@@ -236,13 +232,8 @@ namespace nitwitapi.Controllers
         {
             CheckPassword();
 
-            // Validate
             if (!IsUsernameValid(username))
-            {
-                var badRequestResponse = new Response(HttpStatusCode.BadRequest);
-                badRequestResponse.Json(new { Message = "User name invalid" });
-                return badRequestResponse;
-            }
+                return new Response(HttpStatusCode.Unauthorized);
 
             // Delete from database
             using (var userRepository = CreateUserRepository())
@@ -270,13 +261,11 @@ namespace nitwitapi.Controllers
 
         public Response DeletePost(string username, string postId)
         {
-            // Validate
             if (!IsUsernameValid(username))
-            {
-                var badRequestResponse = new Response(HttpStatusCode.BadRequest);
-                badRequestResponse.Json(new { Message = "User name invalid" });
-                return badRequestResponse;
-            }
+                return new Response(HttpStatusCode.Unauthorized);
+
+            Request.CheckAuthorization(username);
+
             if (!IsPostIdentifierValid(postId))
             {
                 var badRequestResponse = new Response(HttpStatusCode.BadRequest);
