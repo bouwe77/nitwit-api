@@ -11,7 +11,7 @@ namespace Tests.Auth
         private readonly UserStepDefinitions _u;
         private readonly AuthenticationStepDefinitions _a;
         private readonly AuthorizationStepDefinitions _z;
-        private string[] _protectedUrls;
+        private readonly string[] _protectedUrls;
 
         public AuthorizationTests()
         {
