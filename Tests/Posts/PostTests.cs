@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using nitwitapi.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Tests.Http;
 using Tests.Users;
 
 namespace Tests.Posts
@@ -22,46 +24,46 @@ namespace Tests.Posts
         public async Task AddPost_CreatesPost()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasNoPosts("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasNoPosts(Constants.Username1);
 
             // Act
-            var response = await _p.WHEN_PostIsAdded("henk", "Lorem ipsum");
+            var response = await _p.WHEN_PostIsAdded(Constants.Username1, "Lorem ipsum");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Created);
-            await _p.THEN_UserHasFollowingPosts("henk", "Lorem ipsum");
+            await _p.THEN_UserHasFollowingPosts(Constants.Username1, "Lorem ipsum");
         }
 
         [TestMethod]
         public async Task AddPost_CreatesPost_UsernameDifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasNoPosts("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
+            await _p.GIVEN_UserHasNoPosts(Constants.Username1.ToLower());
 
             // Act
-            var response = await _p.WHEN_PostIsAdded("hEnK", "Lorem ipsum");
+            var response = await _p.WHEN_PostIsAdded(Constants.Username1.ToUpper(), "Lorem ipsum");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Created);
-            await _p.THEN_UserHasFollowingPosts("henk", "Lorem ipsum");
+            await _p.THEN_UserHasFollowingPosts(Constants.Username1, "Lorem ipsum");
         }
 
         [TestMethod]
         public async Task AddPost_CreatesPost_WhenContentHasMaxLength()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasNoPosts("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasNoPosts(Constants.Username1);
             var veryLongPost = new string('a', 240);
 
             // Act
-            var response = await _p.WHEN_PostIsAdded("hEnK", veryLongPost);
+            var response = await _p.WHEN_PostIsAdded(Constants.Username1, veryLongPost);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Created);
-            await _p.THEN_UserHasFollowingPosts("henk", veryLongPost);
+            await _p.THEN_UserHasFollowingPosts(Constants.Username1, veryLongPost);
         }
 
         [TestMethod]
@@ -99,7 +101,7 @@ namespace Tests.Posts
             var jsonString = "{ }";
 
             // Act
-            var response = await _p.WHEN_PostIsAddedWithJsonString("henk", jsonString);
+            var response = await _p.WHEN_PostIsAddedWithJsonString(Constants.Username1, jsonString);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -113,7 +115,7 @@ namespace Tests.Posts
             var jsonString = "{ \"this is\": \"no a post\" }";
 
             // Act
-            var response = await _p.WHEN_PostIsAddedWithJsonString("henk", jsonString);
+            var response = await _p.WHEN_PostIsAddedWithJsonString(Constants.Username1, jsonString);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -127,7 +129,7 @@ namespace Tests.Posts
             var jsonString = "{ \"post\": \"\" }";
 
             // Act
-            var response = await _p.WHEN_PostIsAddedWithJsonString("henk", jsonString);
+            var response = await _p.WHEN_PostIsAddedWithJsonString(Constants.Username1, jsonString);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -141,7 +143,7 @@ namespace Tests.Posts
             var veryLongPost = new string('a', 241);
 
             // Act
-            var response = await _p.WHEN_PostIsAdded("henk", veryLongPost);
+            var response = await _p.WHEN_PostIsAdded(Constants.Username1, veryLongPost);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -154,7 +156,7 @@ namespace Tests.Posts
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _p.WHEN_PostIsAdded("henk", "Lorem ipsum");
+            var response = await _p.WHEN_PostIsAdded(Constants.Username1, "Lorem ipsum");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -194,7 +196,7 @@ namespace Tests.Posts
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _p.WHEN_AllPostsAreRequested("henk");
+            var response = await _p.WHEN_AllPostsAreRequested(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -204,11 +206,11 @@ namespace Tests.Posts
         public async Task GetAllPosts_ReturnsEmptyList_WhenUserHasNoPosts()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasNoPosts("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasNoPosts(Constants.Username1);
 
             // Act
-            var response = await _p.WHEN_AllPostsAreRequested("henk");
+            var response = await _p.WHEN_AllPostsAreRequested(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
@@ -219,11 +221,11 @@ namespace Tests.Posts
         public async Task GetAllPosts_ReturnsOnePost_WhenUserHasOnePost()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasFollowingPosts("henk", "Lorem ipsum");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasFollowingPosts(Constants.Username1, "Lorem ipsum");
 
             // Act
-            var response = await _p.WHEN_AllPostsAreRequested("henk");
+            var response = await _p.WHEN_AllPostsAreRequested(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
@@ -234,11 +236,11 @@ namespace Tests.Posts
         public async Task GetAllPosts_ReturnsAllPosts_WhenUserHasMultiplePosts()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasFollowingPosts("henk", "Lorem ipsum", "Hello world");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasFollowingPosts(Constants.Username1, "Lorem ipsum", "Hello world");
 
             // Act
-            var response = await _p.WHEN_AllPostsAreRequested("henk");
+            var response = await _p.WHEN_AllPostsAreRequested(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
@@ -280,7 +282,7 @@ namespace Tests.Posts
             var veryLongPostId = new string('a', 10);
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("henk", veryLongPostId);
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1, veryLongPostId);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -293,7 +295,7 @@ namespace Tests.Posts
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("henk", "post1");
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1, "post1");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -303,11 +305,11 @@ namespace Tests.Posts
         public async Task GetOnePost_ReturnsNotFound_WhenUserHasNoPosts()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasNoPosts("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasNoPosts(Constants.Username1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("henk", "post1");
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1, "post1");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -317,12 +319,15 @@ namespace Tests.Posts
         public async Task GetOnePost_ReturnsNotFound_WhenPostDoesNotBelongToUser()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk", "miepje");
-            var henkPostIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
-            var miepjePostIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("miepje", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1, Constants.Username2);
+            var user1PostIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1, 1);
+
+            var token = JwtHandler.CreateJwtToken(Constants.Username2);
+            var p2 = new PostStepDefinitions(new HttpRequestHandler(token));
+            var user2PostIds = await p2.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username2, 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("henk", miepjePostIds.Single());
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1, user2PostIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -332,11 +337,11 @@ namespace Tests.Posts
         public async Task GetOnePost_ReturnsPost()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1, 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("henk", postIds.Single());
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1, postIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
@@ -347,11 +352,11 @@ namespace Tests.Posts
         public async Task GetOnePost_ReturnsPost_WhenUsernameHasDifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
+            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1.ToLower(), 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("hEnK", postIds.Single());
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1.ToUpper(), postIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
@@ -364,28 +369,31 @@ namespace Tests.Posts
             // Arrange
             var veryLongUsername = new string('a', 100);
             await _u.GIVEN_ThereAreTheFollowingUsers(veryLongUsername);
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(veryLongUsername, 1);
+
+            var token = JwtHandler.CreateJwtToken(veryLongUsername);
+            var p = new PostStepDefinitions(new HttpRequestHandler(token));
+            var postIds = await p.GIVEN_UserHasFollowingNumberOfPosts(veryLongUsername, 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested(veryLongUsername, postIds.Single());
+            var response = await p.WHEN_OnePostIsRequested(veryLongUsername, postIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
-            await _p.THEN_ResponseContainsTheFollowingPostIdentifiers(response, postIds.Single());
+            await p.THEN_ResponseContainsTheFollowingPostIdentifiers(response, postIds.Single());
         }
 
         [TestMethod]
         public async Task GetOnePost_ReturnsPost_WhenPostIdentiferHasDifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1, 1);
             var postIdWithDifferentCasing = postIds.Single().ToUpper();
             if (postIdWithDifferentCasing == postIds.Single())
                 postIdWithDifferentCasing = postIds.Single().ToLower();
 
             // Act
-            var response = await _p.WHEN_OnePostIsRequested("henk", postIdWithDifferentCasing);
+            var response = await _p.WHEN_OnePostIsRequested(Constants.Username1, postIdWithDifferentCasing);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
@@ -426,7 +434,7 @@ namespace Tests.Posts
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _p.WHEN_AllPostsAreDeleted("henk");
+            var response = await _p.WHEN_AllPostsAreDeleted(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -436,44 +444,44 @@ namespace Tests.Posts
         public async Task DeleteAllPosts_ReturnsNoContent_WhenNoPostsExist()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
-            var response = await _p.WHEN_AllPostsAreDeleted("henk");
+            var response = await _p.WHEN_AllPostsAreDeleted(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist("henk");
+            await _p.THEN_NoPostsExist(Constants.Username1);
         }
 
         [TestMethod]
         public async Task DeleteAllPosts_DeletesAllPosts_WhenPostsExist()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasFollowingPosts("henk", "Lorem ipsum", "Hello world");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            await _p.GIVEN_UserHasFollowingPosts(Constants.Username1, "Lorem ipsum", "Hello world");
 
             // Act
-            var response = await _p.WHEN_AllPostsAreDeleted("henk");
+            var response = await _p.WHEN_AllPostsAreDeleted(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist("henk");
+            await _p.THEN_NoPostsExist(Constants.Username1);
         }
 
         [TestMethod]
         public async Task DeleteAllPosts_DeletesAllPosts_WhenUsernameHasDifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            await _p.GIVEN_UserHasFollowingPosts("henk", "Lorem ipsum", "Hello world");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
+            await _p.GIVEN_UserHasFollowingPosts(Constants.Username1.ToLower(), "Lorem ipsum", "Hello world");
 
             // Act
-            var response = await _p.WHEN_AllPostsAreDeleted("hEnK");
+            var response = await _p.WHEN_AllPostsAreDeleted(Constants.Username1.ToUpper());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist("henk");
+            await _p.THEN_NoPostsExist(Constants.Username1);
         }
 
         [TestMethod]
@@ -481,15 +489,18 @@ namespace Tests.Posts
         {
             // Arrange
             var veryLongUsername = new string('a', 100);
+            var token = JwtHandler.CreateJwtToken(veryLongUsername);
+            var p = new PostStepDefinitions(new HttpRequestHandler(token));
+
             await _u.GIVEN_ThereAreTheFollowingUsers(veryLongUsername);
-            await _p.GIVEN_UserHasFollowingPosts(veryLongUsername, "Lorem ipsum", "Hello world");
+            await p.GIVEN_UserHasFollowingPosts(veryLongUsername, "Lorem ipsum", "Hello world");
 
             // Act
-            var response = await _p.WHEN_AllPostsAreDeleted(veryLongUsername);
+            var response = await p.WHEN_AllPostsAreDeleted(veryLongUsername);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist(veryLongUsername);
+            await p.THEN_NoPostsExist(veryLongUsername);
         }
 
         [TestMethod]
@@ -527,7 +538,7 @@ namespace Tests.Posts
             var veryLongPostId = new string('a', 11);
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", veryLongPostId);
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, veryLongPostId);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
@@ -540,7 +551,7 @@ namespace Tests.Posts
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", string.Empty);
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, string.Empty);
 
             // Assert
             // An empty post identifier in the URL means: delete all posts. However, this is not allowed if you don't provide the "password".
@@ -554,7 +565,7 @@ namespace Tests.Posts
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", "post1");
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, "post1");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -564,62 +575,66 @@ namespace Tests.Posts
         public async Task DeletePost_ReturnsNoContent_WhenPostDoesNotExist()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", "post1");
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, "post1");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist("henk");
+            await _p.THEN_NoPostsExist(Constants.Username1);
         }
 
         [TestMethod]
         public async Task DeletePost_DeletesNothing_WhenPostIdentifierBelongsToOtherUser()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk", "miepje");
-            var henkPostIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
-            var miepjePostIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("miepje", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1, Constants.Username2);
+
+            var user1PostIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1, 1);
+
+            var token2 = JwtHandler.CreateJwtToken(Constants.Username2);
+            var p2 = new PostStepDefinitions(new HttpRequestHandler(token2));
+            var user2PostIds = await p2.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username2, 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", miepjePostIds.Single());
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, user2PostIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_UserHasFollowingPostIdentifiers("henk", henkPostIds.Single());
-            await _p.THEN_UserHasFollowingPostIdentifiers("miepje", miepjePostIds.Single());
+            await _p.THEN_UserHasFollowingPostIdentifiers(Constants.Username1, user1PostIds.Single());
+            await _p.THEN_UserHasFollowingPostIdentifiers(Constants.Username2, user2PostIds.Single());
         }
 
         [TestMethod]
         public async Task DeletePost_OnePostLeft_WhenOnePostOfMultipleIsDeleted()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 2);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1, 2);
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", postIds.First());
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, postIds.First());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_UserDoesNotHaveFollowingPostIdentifiers("henk", postIds.First());
-            await _p.THEN_UserHasFollowingPostIdentifiers("henk", postIds.Last());
+            await _p.THEN_UserDoesNotHaveFollowingPostIdentifiers(Constants.Username1, postIds.First());
+            await _p.THEN_UserHasFollowingPostIdentifiers(Constants.Username1, postIds.Last());
         }
 
         [TestMethod]
         public async Task DeletePost_DeletesPost_WhenUsernameHasDifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
+            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1.ToLower(), 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("hEnK", postIds.Single());
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1.ToUpper(), postIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist("henk");
+            await _p.THEN_NoPostsExist(Constants.Username1);
         }
 
         [TestMethod]
@@ -627,15 +642,17 @@ namespace Tests.Posts
         {
             // Arrange
             var veryLongUsername = new string('a', 100);
+            var token = JwtHandler.CreateJwtToken(veryLongUsername);
+            var p = new PostStepDefinitions(new HttpRequestHandler(token));
             await _u.GIVEN_ThereAreTheFollowingUsers(veryLongUsername);
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(veryLongUsername, 1);
+            var postIds = await p.GIVEN_UserHasFollowingNumberOfPosts(veryLongUsername, 1);
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted(veryLongUsername, postIds.Single());
+            var response = await p.WHEN_OnePostIsDeleted(veryLongUsername, postIds.Single());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist(veryLongUsername);
+            await p.THEN_NoPostsExist(veryLongUsername);
         }
 
 
@@ -643,18 +660,18 @@ namespace Tests.Posts
         public async Task DeletePost_DeletesPost_WhenPostIdentifierHasDifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
-            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts("henk", 1);
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+            var postIds = await _p.GIVEN_UserHasFollowingNumberOfPosts(Constants.Username1, 1);
             var postIdWithDifferentCasing = postIds.Single().ToUpper();
             if (postIdWithDifferentCasing == postIds.Single())
                 postIdWithDifferentCasing = postIds.Single().ToLower();
 
             // Act
-            var response = await _p.WHEN_OnePostIsDeleted("henk", postIdWithDifferentCasing);
+            var response = await _p.WHEN_OnePostIsDeleted(Constants.Username1, postIdWithDifferentCasing);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _p.THEN_NoPostsExist("henk");
+            await _p.THEN_NoPostsExist(Constants.Username1);
         }
     }
 }

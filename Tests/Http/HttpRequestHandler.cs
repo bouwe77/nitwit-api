@@ -1,23 +1,35 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
+using nitwitapi.Jwt;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Tests.Http
 {
-    internal class HttpAsserter
+    internal class HttpRequestHandler
     {
+        private readonly string _token;
+
         private HttpClient HttpClient
         {
             get
             {
                 var client = ClientProvider.HttpClient;
                 client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+
                 return client;
             }
+        }
+
+        public HttpRequestHandler()
+            : this(JwtHandler.CreateJwtToken(Constants.Username1))
+        {
+        }
+
+        public HttpRequestHandler(string token)
+        {
+            _token = token;
         }
 
         public async Task<HttpResponseMessage> SendAndAssertGETRequest(string relativeUri, HttpStatusCode expectedStatusCode)
@@ -30,14 +42,6 @@ namespace Tests.Http
         public async Task<HttpResponseMessage> SendGETRequest(string relativeUri)
         {
             var response = await HttpClient.GetAsync(relativeUri);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> SendGETRequest(string relativeUri, string token)
-        {
-            var client = HttpClient;
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            var response = await client.GetAsync(relativeUri);
             return response;
         }
 

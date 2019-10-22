@@ -8,17 +8,17 @@ namespace Tests
     [TestClass]
     public class HomeTests
     {
-        private readonly HttpAsserter _asserter;
+        private readonly HttpRequestHandler _httpRequestHandler;
 
         public HomeTests()
         {
-            _asserter = new HttpAsserter();
+            _httpRequestHandler = new HttpRequestHandler();
         }
 
         [TestMethod]
         public async Task OkResponse_WhenHomeRouteRequested()
         {
-            var response = await _asserter.SendAndAssertGETRequest("", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest("", HttpStatusCode.OK);
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using nitwitapi;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Tests.Users;
 
-namespace Tests.Authentication_Authorization
+namespace Tests.Auth
 {
     [TestClass]
     public class AuthorizationTests : TestsBase
@@ -23,20 +21,17 @@ namespace Tests.Authentication_Authorization
 
             _protectedUrls = new[]
             {
-                "/users/john/timeline"
+                $"/users/{Constants.Username1}/timeline"
             };
         }
 
         [TestMethod]
         public async Task UserIsAuthorizedToAccessProtectedUrls_AfterAuthenticatingSuccessfully()
         {
-            if (!Auth.Enabled)
-                return;
-
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("john");
-            var authResponse = await _a.GIVEN_UserIsAuthenticated("john");
-            var token = await authResponse.GetResponseBody();
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+
+            var token = await _a.GIVEN_UserIsAuthenticated(Constants.Username1);
 
             foreach (var protectedUrl in _protectedUrls)
             {
@@ -51,11 +46,9 @@ namespace Tests.Authentication_Authorization
         [TestMethod]
         public async Task UserIsNotAuthorizedToAccessProtectedUrls_WhenNotAuthenticated()
         {
-            if (!Auth.Enabled)
-                return;
-
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("john");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+
             var token = "hacketyhack";
 
             foreach (var protectedUrl in _protectedUrls)

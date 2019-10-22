@@ -10,11 +10,16 @@ namespace Tests.Users
 {
     internal class UserStepDefinitions
     {
-        private readonly HttpAsserter _asserter;
+        private readonly HttpRequestHandler _httpRequestHandler;
 
         public UserStepDefinitions()
+            : this(new HttpRequestHandler())
         {
-            _asserter = new HttpAsserter();
+        }
+
+        public UserStepDefinitions(HttpRequestHandler httpRequestHandler)
+        {
+            _httpRequestHandler = httpRequestHandler;
         }
 
         public async Task GIVEN_ThereAreTheFollowingUsers(params string[] users)
@@ -35,18 +40,18 @@ namespace Tests.Users
             await DeleteAllUsers();
 
             // Assert there are no users anymore.
-            var response = await _asserter.SendAndAssertGETRequest($"/users?pass={Secret.Password}", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users?pass={Secret.Password}", HttpStatusCode.OK);
             await AssertResponseContainsNoUsers(response);
         }
 
         public async Task<HttpResponseMessage> WHEN_AllUsersAreRequested()
         {
-            return await _asserter.SendGETRequest($"/users?pass={Secret.Password}");
+            return await _httpRequestHandler.SendGETRequest($"/users?pass={Secret.Password}");
         }
 
         public async Task<HttpResponseMessage> WHEN_OneUserIsRequested(string username)
         {
-            return await _asserter.SendGETRequest($"/users/{username}?pass={Secret.Password}");
+            return await _httpRequestHandler.SendGETRequest($"/users/{username}?pass={Secret.Password}");
         }
 
         public async Task<HttpResponseMessage> WHEN_UserIsCreated(string username, string password)
@@ -58,17 +63,17 @@ namespace Tests.Users
         public async Task<HttpResponseMessage> WHEN_UserIsCreatedWithJsonString(string jsonString)
         {
             var json = new StringContent(jsonString);
-            return await _asserter.SendPOSTRequest($"/users?pass={Secret.Password}", json);
+            return await _httpRequestHandler.SendPOSTRequest($"/users?pass={Secret.Password}", json);
         }
 
         public async Task<HttpResponseMessage> WHEN_UserIsDeleted(string username)
         {
-            return await _asserter.SendDELETERequest($"/users/{username}?pass={Secret.Password}");
+            return await _httpRequestHandler.SendDELETERequest($"/users/{username}?pass={Secret.Password}");
         }
 
         public async Task<HttpResponseMessage> WHEN_AllUsersAreDeleted()
         {
-            return await _asserter.SendDELETERequest($"/users?pass={Secret.Password}");
+            return await _httpRequestHandler.SendDELETERequest($"/users?pass={Secret.Password}");
         }
 
         public async Task THEN_ResponseContainsTheFollowingUsers(HttpResponseMessage response, params string[] usernames)
@@ -96,19 +101,19 @@ namespace Tests.Users
             foreach (var username in usernames)
             {
                 var json = new StringContent("{ \"username\": \"" + username + "\", \"password\": \"" + Constants.CorrectPassword + "\" }");
-                await _asserter.SendAndAssertPOSTRequest($"/users?pass={Secret.Password}", json, HttpStatusCode.Created);
+                await _httpRequestHandler.SendAndAssertPOSTRequest($"/users?pass={Secret.Password}", json, HttpStatusCode.Created);
             }
         }
 
         private async Task AssertTheFollowingUsersExist(string[] usernames)
         {
-            var response = await _asserter.SendAndAssertGETRequest($"/users?pass={Secret.Password}", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users?pass={Secret.Password}", HttpStatusCode.OK);
             await AssertResponseContainsTheFollowingUsers(response, usernames);
         }
 
         private async Task AssertNoUsersExist()
         {
-            var response = await _asserter.SendAndAssertGETRequest($"/users?pass={Secret.Password}", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users?pass={Secret.Password}", HttpStatusCode.OK);
             await AssertResponseContainsNoUsers(response);
         }
 
@@ -127,7 +132,7 @@ namespace Tests.Users
 
         private async Task DeleteAllUsers()
         {
-            await _asserter.SendAndAssertDELETERequest($"/users?pass={Secret.Password}", HttpStatusCode.NoContent);
+            await _httpRequestHandler.SendAndAssertDELETERequest($"/users?pass={Secret.Password}", HttpStatusCode.NoContent);
         }
     }
 }

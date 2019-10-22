@@ -11,11 +11,16 @@ namespace Tests.Posts
 {
     internal class PostStepDefinitions
     {
-        private readonly HttpAsserter _asserter;
+        private readonly HttpRequestHandler _httpRequestHandler;
 
         public PostStepDefinitions()
+            : this(new HttpRequestHandler())
         {
-            _asserter = new HttpAsserter();
+        }
+
+        public PostStepDefinitions(HttpRequestHandler httpRequestHandler)
+        {
+            _httpRequestHandler = httpRequestHandler;
         }
 
         internal async Task GIVEN_UserHasNoPosts(string username)
@@ -24,7 +29,7 @@ namespace Tests.Posts
             await DeleteAllPosts(username);
 
             // Assert the user has no posts anymore.
-            var response = await _asserter.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
             await AssertResponseContainsNoPosts(response);
         }
 
@@ -57,12 +62,12 @@ namespace Tests.Posts
 
         public async Task<HttpResponseMessage> WHEN_AllPostsAreRequested(string username)
         {
-            return await _asserter.SendGETRequest($"/users/{username}/posts");
+            return await _httpRequestHandler.SendGETRequest($"/users/{username}/posts");
         }
 
         public async Task<HttpResponseMessage> WHEN_OnePostIsRequested(string username, string postId)
         {
-            return await _asserter.SendGETRequest($"/users/{username}/posts/{postId}");
+            return await _httpRequestHandler.SendGETRequest($"/users/{username}/posts/{postId}");
         }
 
         internal async Task<HttpResponseMessage> WHEN_PostIsAdded(string username, string post)
@@ -74,17 +79,17 @@ namespace Tests.Posts
         public async Task<HttpResponseMessage> WHEN_PostIsAddedWithJsonString(string username, string jsonString)
         {
             var json = new StringContent(jsonString);
-            return await _asserter.SendPOSTRequest($"/users/{username}/posts", json);
+            return await _httpRequestHandler.SendPOSTRequest($"/users/{username}/posts", json);
         }
 
         public async Task<HttpResponseMessage> WHEN_AllPostsAreDeleted(string username)
         {
-            return await _asserter.SendDELETERequest($"/users/{username}/posts?pass={Secret.Password}");
+            return await _httpRequestHandler.SendDELETERequest($"/users/{username}/posts?pass={Secret.Password}");
         }
 
         internal async Task<HttpResponseMessage> WHEN_OnePostIsDeleted(string username, string postId)
         {
-            return await _asserter.SendDELETERequest($"/users/{username}/posts/{postId}");
+            return await _httpRequestHandler.SendDELETERequest($"/users/{username}/posts/{postId}");
         }
 
         internal async Task THEN_UserHasFollowingPosts(string username, params string[] posts)
@@ -116,7 +121,7 @@ namespace Tests.Posts
         {
             foreach (var postId in postIdentifiers)
             {
-                await _asserter.SendAndAssertGETRequest($"/users/{username}/posts/{postId}", HttpStatusCode.OK);
+                await _httpRequestHandler.SendAndAssertGETRequest($"/users/{username}/posts/{postId}", HttpStatusCode.OK);
             }
         }
 
@@ -124,19 +129,19 @@ namespace Tests.Posts
         {
             foreach (var postId in postIdentifiers)
             {
-                await _asserter.SendAndAssertGETRequest($"/users/{username}/posts/{postId}", HttpStatusCode.NotFound);
+                await _httpRequestHandler.SendAndAssertGETRequest($"/users/{username}/posts/{postId}", HttpStatusCode.NotFound);
             }
         }
 
         private async Task AssertNoPostsExist(string username)
         {
-            var response = await _asserter.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
             await AssertResponseContainsNoPosts(response);
         }
 
         private async Task AssertUserHasFollowingPosts(string username, string[] posts)
         {
-            var response = await _asserter.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
             await AssertResponseContainsTheFollowingPosts(response, posts);
         }
 
@@ -165,7 +170,7 @@ namespace Tests.Posts
 
         private async Task DeleteAllPosts(string username)
         {
-            await _asserter.SendAndAssertDELETERequest($"/users/{username}/posts?pass={Secret.Password}", HttpStatusCode.NoContent);
+            await _httpRequestHandler.SendAndAssertDELETERequest($"/users/{username}/posts?pass={Secret.Password}", HttpStatusCode.NoContent);
         }
 
         private async Task<IEnumerable<string>> CreateTheFollowingPosts(string username, string[] postContents)
@@ -174,7 +179,7 @@ namespace Tests.Posts
             foreach (var postContent in postContents)
             {
                 var json = new StringContent("{ \"content\": \"" + postContent + "\" }");
-                var response = await _asserter.SendAndAssertPOSTRequest($"/users/{username}/posts", json, HttpStatusCode.Created);
+                var response = await _httpRequestHandler.SendAndAssertPOSTRequest($"/users/{username}/posts", json, HttpStatusCode.Created);
 
                 var postId = response.GetLocationUri().Split('/').Last();
                 postIds.Add(postId);
@@ -185,7 +190,7 @@ namespace Tests.Posts
 
         private async Task AssertTheFollowingPostsExist(string username, string[] posts)
         {
-            var response = await _asserter.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
+            var response = await _httpRequestHandler.SendAndAssertGETRequest($"/users/{username}/posts", HttpStatusCode.OK);
             await AssertResponseContainsTheFollowingPosts(response, posts);
         }
     }

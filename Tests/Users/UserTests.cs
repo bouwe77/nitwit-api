@@ -32,66 +32,66 @@ namespace Tests.Users
         public async Task GetAll_ReturnsAllUsers_WhenThereIsOneUser()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
             var response = await _u.WHEN_AllUsersAreRequested();
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
-            await _u.THEN_ResponseContainsTheFollowingUsers(response, "henk");
+            await _u.THEN_ResponseContainsTheFollowingUsers(response, Constants.Username1);
         }
 
         [TestMethod]
         public async Task GetAll_ReturnsAllUsers_WhenThereAreMultipleUsers()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk", "miep");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1, Constants.Username2);
 
             // Act
             var response = await _u.WHEN_AllUsersAreRequested();
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
-            await _u.THEN_ResponseContainsTheFollowingUsers(response, "henk", "miep");
+            await _u.THEN_ResponseContainsTheFollowingUsers(response, Constants.Username1, Constants.Username2);
         }
 
         [TestMethod]
         public async Task GetOne_ReturnsAUser_WhenTheUserExists()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
-            var response = await _u.WHEN_OneUserIsRequested("henk");
+            var response = await _u.WHEN_OneUserIsRequested(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
-            await _u.THEN_ResponseContainsTheFollowingUsers(response, "henk");
+            await _u.THEN_ResponseContainsTheFollowingUsers(response, Constants.Username1);
         }
 
         [TestMethod]
         public async Task GetOne_ReturnsAUser_WhenTheUserExists_DifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
 
             // Act
-            var response = await _u.WHEN_OneUserIsRequested("hEnK");
+            var response = await _u.WHEN_OneUserIsRequested(Constants.Username1.ToUpper());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
-            await _u.THEN_ResponseContainsTheFollowingUsers(response, "henk");
+            await _u.THEN_ResponseContainsTheFollowingUsers(response, Constants.Username1);
         }
 
         [TestMethod]
         public async Task GetOne_ReturnsNotFound_WhenUserDoesNotExist()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
-            var response = await _u.WHEN_OneUserIsRequested("miep");
+            var response = await _u.WHEN_OneUserIsRequested(Constants.Username2);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
@@ -169,10 +169,10 @@ namespace Tests.Users
         public async Task AddUser_ReturnsConflict_WhenUserAlreadyExists()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
-            var response = await _u.WHEN_UserIsCreated("henk", "password");
+            var response = await _u.WHEN_UserIsCreated(Constants.Username1, "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);
@@ -182,10 +182,10 @@ namespace Tests.Users
         public async Task AddUser_ReturnsConflict_WhenUserAlreadyExists_DifferentCasing()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
 
             // Act
-            var response = await _u.WHEN_UserIsCreated("hEnK", "password");
+            var response = await _u.WHEN_UserIsCreated(Constants.Username1.ToUpper(), "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);
@@ -198,12 +198,12 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _u.WHEN_UserIsCreated("henk123", "password");
+            var response = await _u.WHEN_UserIsCreated(Constants.Username1, "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Created);
-            THEN_ResponseHasLocationHeader(response, "/users/henk123");
-            await _u.THEN_TheFollowingUsersExist("henk123");
+            THEN_ResponseHasLocationHeader(response, $"/users/{Constants.Username1}");
+            await _u.THEN_TheFollowingUsersExist(Constants.Username1);
         }
 
         [TestMethod]
@@ -256,7 +256,7 @@ namespace Tests.Users
             await _u.GIVEN_ThereAreNoUsers();
 
             // Act
-            var response = await _u.WHEN_UserIsDeleted("henk");
+            var response = await _u.WHEN_UserIsDeleted(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
@@ -266,10 +266,10 @@ namespace Tests.Users
         public async Task DeleteUser_DeletesUser()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
 
             // Act
-            var response = await _u.WHEN_UserIsDeleted("henk");
+            var response = await _u.WHEN_UserIsDeleted(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
@@ -280,10 +280,10 @@ namespace Tests.Users
         public async Task DeleteUser_DeletesUser_DifferentCase()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1.ToLower());
 
             // Act
-            var response = await _u.WHEN_UserIsDeleted("hEnK");
+            var response = await _u.WHEN_UserIsDeleted(Constants.Username1.ToUpper());
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
@@ -309,14 +309,14 @@ namespace Tests.Users
         public async Task DeleteUser_DeletesUser_OtherUsersStillExist()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk", "miepje");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1, Constants.Username2);
 
             // Act
-            var response = await _u.WHEN_UserIsDeleted("henk");
+            var response = await _u.WHEN_UserIsDeleted(Constants.Username1);
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.NoContent);
-            await _u.THEN_TheFollowingUsersExist("miepje");
+            await _u.THEN_TheFollowingUsersExist(Constants.Username2);
         }
 
         [TestMethod]
@@ -337,7 +337,7 @@ namespace Tests.Users
         public async Task DeleteAllUsers_DeletesAllUsers_WhenUsersExist()
         {
             // Arrange
-            await _u.GIVEN_ThereAreTheFollowingUsers("henk", "miep");
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1, Constants.Username2);
 
             // Act
             var response = await _u.WHEN_AllUsersAreDeleted();
