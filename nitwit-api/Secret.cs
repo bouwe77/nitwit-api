@@ -20,7 +20,7 @@ namespace nitwitapi
                     if (!File.Exists(_filePath))
                         throw new Exception($"Missing file: '{_filePath}'");
 
-                    _password = File.ReadAllText(Path.Combine(_filePath));
+                    _password = File.ReadAllText(Path.Combine(_filePath)).Trim();
                 }
 
                 return _password;

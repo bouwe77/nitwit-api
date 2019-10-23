@@ -27,9 +27,13 @@ namespace Data.Entities
         public string TimelineEtagVersion { get; set; }
 
         [JsonIgnore]
+        public string PostsEtagVersion { get; set; }
+
+        [JsonIgnore]
         public string PasswordHash { get; set; }
 
         [Ignore]
+        [JsonProperty(PropertyName = "password")]
         public string Password { get; set; }
     }
 }
