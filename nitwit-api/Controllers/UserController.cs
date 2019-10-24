@@ -3,6 +3,7 @@ using Data.Entities;
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,9 +55,9 @@ namespace nitwitapi.Controllers
 
             using (var repo = CreateUserRepository())
             {
-                // Check user already exists.
+                // Check user already exists or username is not allowed.
                 var existingUser = repo.GetAll().SingleOrDefault(u => u.Name.Equals(newUser.Name, StringComparison.OrdinalIgnoreCase));
-                if (existingUser != null)
+                if (existingUser != null || !IsUsernameAllowed(newUser.Name))
                     return new Response(HttpStatusCode.Conflict);
 
                 // Save new user to database
@@ -75,7 +76,10 @@ namespace nitwitapi.Controllers
 
         public Response GetUser(string username)
         {
-            CheckPassword();
+            if (!IsUsernameValid(username))
+                return new Response(HttpStatusCode.Unauthorized);
+
+            Request.CheckAuthorization(username);
 
             // Validate
             if (!IsUsernameValid(username))

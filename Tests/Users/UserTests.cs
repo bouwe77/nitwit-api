@@ -98,7 +98,7 @@ namespace Tests.Users
         }
 
         [TestMethod]
-        public async Task GetOne_ReturnsBadRequest_WhenUsernameTooLong()
+        public async Task GetOne_ReturnsUnauthorized_WhenUsernameTooLong()
         {
             // Arrange
             await _u.GIVEN_ThereAreNoUsers();
@@ -108,7 +108,7 @@ namespace Tests.Users
             var response = await _u.WHEN_OneUserIsRequested(veryLongUsername);
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.BadRequest);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
@@ -186,6 +186,32 @@ namespace Tests.Users
 
             // Act
             var response = await _u.WHEN_UserIsCreated(Constants.Username1.ToUpper(), "password");
+
+            // Assert
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);
+        }
+
+        [TestMethod]
+        public async Task AddUser_ReturnsConflict_WhenUsernameNotAllowed()
+        {
+            // Arrange
+            await _u.GIVEN_ThereAreNoUsers();
+
+            // Act
+            var response = await _u.WHEN_UserIsCreated("following", "password");
+
+            // Assert
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);
+        }
+
+        [TestMethod]
+        public async Task AddUser_ReturnsConflict_WhenUsernameNotAllowed_DifferentCasing()
+        {
+            // Arrange
+            await _u.GIVEN_ThereAreNoUsers();
+
+            // Act
+            var response = await _u.WHEN_UserIsCreated("fOlLoWiNg", "password");
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Conflict);

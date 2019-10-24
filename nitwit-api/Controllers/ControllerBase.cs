@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace nitwitapi.Controllers
 {
@@ -99,6 +102,18 @@ namespace nitwitapi.Controllers
         protected bool IsPasswordValid(string password)
         {
             return !string.IsNullOrWhiteSpace(password) && password.Length <= 50;
+        }
+
+        protected bool IsUsernameAllowed(string username)
+        {
+            var restrictedUsernames = new List<string>
+            {
+                "following",
+                "timeline",
+                "home"
+            };
+
+            return !restrictedUsernames.Contains(username, StringComparer.OrdinalIgnoreCase);
         }
     }
 }
