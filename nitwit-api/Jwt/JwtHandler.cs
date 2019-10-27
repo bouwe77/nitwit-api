@@ -10,8 +10,10 @@ namespace nitwitapi.Jwt
     {
         private const string _usernameKey = "username";
 
-        public static bool IsAuthorized(string token, string expectedUsername = null)
+        public static bool IsAuthorized(string token, out string usernameFromToken, string expectedUsername = null)
         {
+            usernameFromToken = null;
+
             try
             {
                 IJsonSerializer serializer = new JsonNetSerializer();
@@ -22,15 +24,17 @@ namespace nitwitapi.Jwt
 
                 var json = decoder.Decode(token, Secret.Password, verify: true);
 
+                var payload = serializer.Deserialize<Dictionary<string, object>>(json);
+
+                if (!payload.TryGetValue(_usernameKey, out object usernameObject))
+                    return false;
+
+                var actualUsername = usernameObject.ToString();
+                usernameFromToken = actualUsername;
+
                 // If a username is expected, check the payload contains that username.
                 if (!string.IsNullOrWhiteSpace(expectedUsername))
                 {
-                    var payload = serializer.Deserialize<Dictionary<string, object>>(json);
-
-                    if (!payload.TryGetValue(_usernameKey, out object usernameObject))
-                        return false;
-
-                    var actualUsername = usernameObject.ToString();
                     if (!expectedUsername.Equals(actualUsername, StringComparison.OrdinalIgnoreCase))
                         return false;
                 }

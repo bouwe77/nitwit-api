@@ -51,7 +51,12 @@ namespace Tests.Users
 
         public async Task<HttpResponseMessage> WHEN_OneUserIsRequested(string username)
         {
-            return await _httpRequestHandler.SendGETRequest($"/users/{username}?pass={Secret.Password}");
+            return await _httpRequestHandler.SendGETRequest($"/users/{username}");
+        }
+
+        public async Task<HttpResponseMessage> WHEN_WhoAmIIsRequested()
+        {
+            return await _httpRequestHandler.SendGETRequest($"/users/whoami");
         }
 
         public async Task<HttpResponseMessage> WHEN_UserIsCreated(string username, string password)

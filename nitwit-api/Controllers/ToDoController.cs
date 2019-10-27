@@ -2,6 +2,7 @@
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,10 @@ namespace nitwitapi.Controllers
                 todoRepository.Insert(newToDo);
             }
 
-            return new CreatedResponse(string.Empty);
+            var createdResponse= new CreatedResponse(string.Empty);
+            createdResponse.AddAccessControlAllowOriginHeader();
+
+            return createdResponse;
         }
 
         public Response GetAllToDos()

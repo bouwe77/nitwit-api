@@ -1,7 +1,4 @@
-﻿using System;
-using Dolores.Exceptions;
-using Dolores.Http;
-using Dolores.Requests;
+﻿using Dolores.Http;
 using Dolores.Responses;
 
 namespace nitwitapi.Extensions
@@ -12,6 +9,13 @@ namespace nitwitapi.Extensions
         {
             response.SetHeader(HttpResponseHeaderFields.ETag, etag);
             response.SetHeader("Access-Control-Expose-Headers", HttpResponseHeaderFields.ETag);
+        }
+
+        public static void AddAccessControlAllowOriginHeader(this Response response)
+        {
+            //LET OP: Op Azure zie ik deze headers niet, ze lijken te verdwijnen of zo... :-@
+            response.SetHeader(HttpResponseHeaderFields.AccessControlAllowOrigin, "*");
+            response.SetHeader("Access-Control-Expose-Headers", HttpResponseHeaderFields.AccessControlAllowOrigin);
         }
     }
 }

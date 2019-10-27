@@ -2,6 +2,7 @@
 using Dolores.Http;
 using Dolores.Requests;
 using Dolores.Responses;
+using nitwitapi.Extensions;
 using nitwitapi.Jwt;
 using System;
 using System.IO;
@@ -22,28 +23,45 @@ namespace nitwitapi.Controllers
             }
             catch (Exception)
             {
-                return new Response(HttpStatusCode.Unauthorized);
+                var r1 = new Response(HttpStatusCode.Unauthorized);
+                r1.AddAccessControlAllowOriginHeader();
+                return r1;
             }
 
             // Validate
             if (authentication == null || !IsUsernameValid(authentication.Username))
-                return new Response(HttpStatusCode.Unauthorized);
+            {
+                var r2 = new Response(HttpStatusCode.Unauthorized);
+                r2.AddAccessControlAllowOriginHeader();
+                return r2;
+            }
 
             User user;
             using (var repo = CreateUserRepository())
             {
                 user = repo.Find(u => u.Name.Equals(authentication.Username, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 if (user == null)
-                    return new Response(HttpStatusCode.Unauthorized);
+                {
+                    var r3 = new Response(HttpStatusCode.Unauthorized);
+                    r3.AddAccessControlAllowOriginHeader();
+                    return r3;
+                }
 
                 try
                 {
                     var passwordCorrect = BCrypt.Net.BCrypt.Verify(authentication.Password, user.PasswordHash);
-                    if (!passwordCorrect) return new Response(HttpStatusCode.Unauthorized);
+                    if (!passwordCorrect)
+                    {
+                        var r4 = new Response(HttpStatusCode.Unauthorized);
+                        r4.AddAccessControlAllowOriginHeader();
+                        return r4;
+                    }
                 }
                 catch
                 {
-                    return new Response(HttpStatusCode.Unauthorized);
+                    var r5 = new Response(HttpStatusCode.Unauthorized);
+                    r5.AddAccessControlAllowOriginHeader();
+                    return r5;
                 }
             }
 
@@ -53,6 +71,8 @@ namespace nitwitapi.Controllers
             {
                 MessageBody = new MemoryStream(Encoding.UTF8.GetBytes(jwtToken))
             };
+
+            response.AddAccessControlAllowOriginHeader();
 
             return response;
         }

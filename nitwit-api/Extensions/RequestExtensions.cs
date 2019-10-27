@@ -8,10 +8,15 @@ namespace nitwitapi.Extensions
 {
     public static class RequestExtensions
     {
-        public static void CheckAuthorization(this Request request, string expectedUsername = null)
+        private static Logger _logger = new Logger();
+
+        public static string CheckAuthorization(this Request request, string expectedUsername = null)
         {
             if (!Auth.Enabled)
-                return;
+            {
+                _logger.Log("LET OP auth is NIET enabled!");
+                return null;
+            }
 
             if (request == null)
                 throw Unauthorized();
@@ -31,13 +36,15 @@ namespace nitwitapi.Extensions
             jwtToken = jwtToken.Trim();
 
             // Check authorization for the given JWT token.
-            if (!JwtHandler.IsAuthorized(jwtToken, expectedUsername))
+            if (!JwtHandler.IsAuthorized(jwtToken, out string usernameFromToken, expectedUsername))
                 throw Unauthorized();
+
+            return usernameFromToken;
         }
 
-        private static Exception Unauthorized()
+        private static Exception Unauthorized(string message = "Unauthorized")
         {
-            return new HttpException("Unauthorized", HttpStatusCode.Unauthorized);
+            return new HttpException(message, HttpStatusCode.Unauthorized);
         }
     }
 }

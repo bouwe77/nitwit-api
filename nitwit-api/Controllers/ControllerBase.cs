@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using nitwitapi.Extensions;
 
 namespace nitwitapi.Controllers
 {
@@ -30,7 +31,8 @@ namespace nitwitapi.Controllers
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings
             {
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                NullValueHandling = NullValueHandling.Ignore
             };
 
             string json = JsonConvert.SerializeObject(objectToSerializeToJson, jsonSettings);
@@ -40,14 +42,9 @@ namespace nitwitapi.Controllers
             };
 
             response.SetContentTypeHeader("application/json; charset=utf-8");
-            AddAccessControlAllowOriginHeader(response);
-
+            response.AddAccessControlAllowOriginHeader();
+            
             return response;
-        }
-
-        protected static void AddAccessControlAllowOriginHeader(Response response)
-        {
-            response.SetHeader(HttpResponseHeaderFields.AccessControlAllowOrigin, "http://localhost:3000");
         }
 
         protected SqliteRepository<User> CreateUserRepository()
@@ -110,7 +107,8 @@ namespace nitwitapi.Controllers
             {
                 "following",
                 "timeline",
-                "home"
+                "home",
+                "whoami"
             };
 
             return !restrictedUsernames.Contains(username, StringComparer.OrdinalIgnoreCase);

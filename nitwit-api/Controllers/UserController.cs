@@ -6,7 +6,9 @@ using Dolores.Responses;
 using nitwitapi.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace nitwitapi.Controllers
 {
@@ -71,22 +73,34 @@ namespace nitwitapi.Controllers
                 repo.Insert(newUser);
             }
 
-            return new CreatedResponse($"/users/{newUser.Name}");
+            var createdResponse = new CreatedResponse($"/users/{newUser.Name}");
+            createdResponse.AddAccessControlAllowOriginHeader();
+
+            return createdResponse;
         }
 
         public Response GetUser(string username)
         {
-            if (!IsUsernameValid(username))
-                return new Response(HttpStatusCode.Unauthorized);
-
-            Request.CheckAuthorization(username);
-
-            // Validate
-            if (!IsUsernameValid(username))
+            if (username.Equals("whoami", StringComparison.OrdinalIgnoreCase))
             {
-                var response = new Response(HttpStatusCode.BadRequest);
-                response.Json(new { Message = "User name invalid" });
-                return response;
+                username = Request.CheckAuthorization();
+                if (string.IsNullOrEmpty(username))
+                {
+                    var r1 = new Response(HttpStatusCode.Unauthorized);
+                    r1.AddAccessControlAllowOriginHeader();
+                    return r1;
+                }
+            }
+            else
+            {
+                if (!IsUsernameValid(username))
+                {
+                    var r2 = new Response(HttpStatusCode.Unauthorized);
+                    r2.AddAccessControlAllowOriginHeader();
+                    return r2;
+                }
+
+                Request.CheckAuthorization(username);
             }
 
             // Get from database.
@@ -95,7 +109,11 @@ namespace nitwitapi.Controllers
             {
                 user = repo.GetAll().SingleOrDefault(u => u.Name.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (user == null)
-                    return new Response(HttpStatusCode.NotFound);
+                {
+                    var r3 = new Response(HttpStatusCode.NotFound);
+                    r3.AddAccessControlAllowOriginHeader();
+                    return r3;
+                }
             }
 
             return GetJsonResponse(user);

@@ -111,7 +111,10 @@ namespace nitwitapi.Controllers
                 }
             }
 
-            return new CreatedResponse($"/users/{username}/following/{newFollowing.FollowingUsername}");
+            var createdResponse = new CreatedResponse($"/users/{username}/following/{newFollowing.FollowingUsername}");
+            createdResponse.AddAccessControlAllowOriginHeader();
+
+            return createdResponse;
         }
 
         public Response DeleteFollowing(string followerUsername, string followingUsername)
@@ -156,7 +159,10 @@ namespace nitwitapi.Controllers
                 }
             }
 
-            return new Response(HttpStatusCode.NoContent);
+            var response = new Response(HttpStatusCode.NoContent);
+            response.AddAccessControlAllowOriginHeader();
+
+            return response;
         }
 
         public Response EveryoneFollowsEachOther()

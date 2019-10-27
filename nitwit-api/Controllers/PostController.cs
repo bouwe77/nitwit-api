@@ -124,6 +124,7 @@ namespace nitwitapi.Controllers
 
             var response = GetJsonResponse(posts);
             response.SetEtagHeader(currentPostsEtag);
+            response.AddAccessControlAllowOriginHeader();
 
             return response;
         }
@@ -142,6 +143,7 @@ namespace nitwitapi.Controllers
             }
 
             var response = GetJsonResponse(posts);
+            response.AddAccessControlAllowOriginHeader();
 
             return response;
         }
@@ -190,6 +192,7 @@ namespace nitwitapi.Controllers
 
             var response = GetJsonResponse(posts);
             response.SetEtagHeader(currentTimelineEtag);
+            response.AddAccessControlAllowOriginHeader();
 
             return response;
         }
@@ -227,6 +230,7 @@ namespace nitwitapi.Controllers
             }
 
             var response = GetJsonResponse(post);
+            response.AddAccessControlAllowOriginHeader();
 
             return response;
         }

@@ -85,7 +85,7 @@ namespace Tests.Users
         }
 
         [TestMethod]
-        public async Task GetOne_ReturnsNotFound_WhenUserDoesNotExist()
+        public async Task GetOne_ReturnsUnauthorized_WhenUserDoesNotExist()
         {
             // Arrange
             await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
@@ -94,7 +94,7 @@ namespace Tests.Users
             var response = await _u.WHEN_OneUserIsRequested(Constants.Username2);
 
             // Assert
-            THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
         }
 
         [TestMethod]
@@ -109,6 +109,32 @@ namespace Tests.Users
 
             // Assert
             THEN_ResponseHasStatusCode(response, HttpStatusCode.Unauthorized);
+        }
+
+        [TestMethod]
+        public async Task GetWhoAmI_ReturnsUser_WhenUserExists()
+        {
+            // Arrange
+            await _u.GIVEN_ThereAreTheFollowingUsers(Constants.Username1);
+
+            // Act
+            var response = await _u.WHEN_WhoAmIIsRequested();
+
+            // Assert
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.OK);
+        }
+
+        [TestMethod]
+        public async Task GetWhoAmI_ReturnsNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            await _u.GIVEN_ThereAreNoUsers();
+
+            // Act
+            var response = await _u.WHEN_WhoAmIIsRequested();
+
+            // Assert
+            THEN_ResponseHasStatusCode(response, HttpStatusCode.NotFound);
         }
 
         [TestMethod]
