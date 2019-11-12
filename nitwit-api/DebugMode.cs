@@ -5,9 +5,9 @@ namespace nitwitapi
     /// <summary>
     /// Authentication and authorization is enabled by creating a specific file.
     /// </summary>
-    public class Auth
+    public class DebugMode
     {
-        private static readonly string _filePath = Path.Combine(Constants.ApplicationFolder, "auth.enabled");
+        private static readonly string _filePath = Path.Combine(Constants.ApplicationFolder, "debug.enabled");
         private static bool? _enabled;
 
         public static bool Enabled

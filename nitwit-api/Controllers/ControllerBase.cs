@@ -113,5 +113,17 @@ namespace nitwitapi.Controllers
 
             return !restrictedUsernames.Contains(username, StringComparer.OrdinalIgnoreCase);
         }
+
+        protected Response GetUnauthorizedResponse(string message = "Unauthorized")
+        {
+            var response = new Response(HttpStatusCode.Unauthorized);
+
+            if (DebugMode.Enabled && !string.IsNullOrEmpty(message))
+            {
+                response.MessageBody = new MemoryStream(Encoding.UTF8.GetBytes(message));
+            }
+
+            return response;
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace nitwitapi.Controllers
             }
             catch (Exception)
             {
-                var r1 = new Response(HttpStatusCode.Unauthorized);
+                var r1 = GetUnauthorizedResponse("Error deserializing JSON");
                 r1.AddAccessControlAllowOriginHeader();
                 return r1;
             }
@@ -31,7 +31,7 @@ namespace nitwitapi.Controllers
             // Validate
             if (authentication == null || !IsUsernameValid(authentication.Username))
             {
-                var r2 = new Response(HttpStatusCode.Unauthorized);
+                var r2 = GetUnauthorizedResponse("Invalid username");
                 r2.AddAccessControlAllowOriginHeader();
                 return r2;
             }
@@ -42,7 +42,7 @@ namespace nitwitapi.Controllers
                 user = repo.Find(u => u.Name.Equals(authentication.Username, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 if (user == null)
                 {
-                    var r3 = new Response(HttpStatusCode.Unauthorized);
+                    var r3 = GetUnauthorizedResponse("User not found");
                     r3.AddAccessControlAllowOriginHeader();
                     return r3;
                 }
@@ -52,14 +52,14 @@ namespace nitwitapi.Controllers
                     var passwordCorrect = BCrypt.Net.BCrypt.Verify(authentication.Password, user.PasswordHash);
                     if (!passwordCorrect)
                     {
-                        var r4 = new Response(HttpStatusCode.Unauthorized);
+                        var r4 = GetUnauthorizedResponse();
                         r4.AddAccessControlAllowOriginHeader();
                         return r4;
                     }
                 }
                 catch
                 {
-                    var r5 = new Response(HttpStatusCode.Unauthorized);
+                    var r5 = GetUnauthorizedResponse();
                     r5.AddAccessControlAllowOriginHeader();
                     return r5;
                 }

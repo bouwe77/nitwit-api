@@ -86,7 +86,7 @@ namespace nitwitapi.Controllers
                 username = Request.CheckAuthorization();
                 if (string.IsNullOrEmpty(username))
                 {
-                    var r1 = new Response(HttpStatusCode.Unauthorized);
+                    var r1= GetUnauthorizedResponse("Username not found in token");
                     r1.AddAccessControlAllowOriginHeader();
                     return r1;
                 }
@@ -95,12 +95,12 @@ namespace nitwitapi.Controllers
             {
                 if (!IsUsernameValid(username))
                 {
-                    var r2 = new Response(HttpStatusCode.Unauthorized);
+                    var r2= GetUnauthorizedResponse("Username invalid");
                     r2.AddAccessControlAllowOriginHeader();
                     return r2;
                 }
 
-                Request.CheckAuthorization(username);
+                // Note that this call can be done unauthenticated. Although not very secure, I needed a mechanism to check a user exists.
             }
 
             // Get from database.

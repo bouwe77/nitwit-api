@@ -16,7 +16,7 @@ namespace nitwitapi.Controllers
         public Response AddPost(string username)
         {
             if (!IsUsernameValid(username))
-                return new Response(HttpStatusCode.Unauthorized);
+                return GetUnauthorizedResponse("Username invalid");
 
             Request.CheckAuthorization(username);
 
@@ -151,7 +151,7 @@ namespace nitwitapi.Controllers
         public Response GetTimeline(string username)
         {
             if (!IsUsernameValid(username))
-                return new Response(HttpStatusCode.Unauthorized);
+                return GetUnauthorizedResponse("Username invalid");
 
             Request.CheckAuthorization(username);
 
@@ -256,7 +256,7 @@ namespace nitwitapi.Controllers
             CheckPassword();
 
             if (!IsUsernameValid(username))
-                return new Response(HttpStatusCode.Unauthorized);
+                return GetUnauthorizedResponse("Username invalid");
 
             // Delete from database
             using (var userRepository = CreateUserRepository())
@@ -285,7 +285,7 @@ namespace nitwitapi.Controllers
         public Response DeletePost(string username, string postId)
         {
             if (!IsUsernameValid(username))
-                return new Response(HttpStatusCode.Unauthorized);
+                return GetUnauthorizedResponse("Username invalid");
 
             Request.CheckAuthorization(username);
 

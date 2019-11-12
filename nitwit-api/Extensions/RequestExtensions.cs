@@ -19,12 +19,12 @@ namespace nitwitapi.Extensions
             }
 
             if (request == null)
-                throw Unauthorized();
+                throw Unauthorized("Empty request");
 
             // Check for the Authorization header.
             var authorizationHeader = request.GetHeaderValue(HttpRequestHeaderFields.Authorization);
             if (string.IsNullOrWhiteSpace(authorizationHeader))
-                throw Unauthorized();
+                throw Unauthorized("No authorization header");
 
             // Remove the "Bearer" part from the Authorization token.
             string jwtToken;
@@ -37,13 +37,16 @@ namespace nitwitapi.Extensions
 
             // Check authorization for the given JWT token.
             if (!JwtHandler.IsAuthorized(jwtToken, out string usernameFromToken, expectedUsername))
-                throw Unauthorized();
+                throw Unauthorized("JWT token not authorized");
 
             return usernameFromToken;
         }
 
-        private static Exception Unauthorized(string message = "Unauthorized")
+        private static Exception Unauthorized(string message)
         {
+            if (!DebugMode.Enabled || string.IsNullOrEmpty(message))
+                message = "Unauthorized";
+
             return new HttpException(message, HttpStatusCode.Unauthorized);
         }
     }

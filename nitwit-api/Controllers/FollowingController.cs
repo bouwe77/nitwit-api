@@ -55,7 +55,7 @@ namespace nitwitapi.Controllers
         public Response AddFollowing(string username)
         {
             if (!IsUsernameValid(username))
-                return new Response(HttpStatusCode.Unauthorized);
+                return GetUnauthorizedResponse("Username invalid");
 
             Request.CheckAuthorization(username);
 
@@ -120,7 +120,7 @@ namespace nitwitapi.Controllers
         public Response DeleteFollowing(string followerUsername, string followingUsername)
         {
             if (!IsUsernameValid(followerUsername))
-                return new Response(HttpStatusCode.Unauthorized);
+                return GetUnauthorizedResponse("Username invalid");
 
             Request.CheckAuthorization(followerUsername);
 

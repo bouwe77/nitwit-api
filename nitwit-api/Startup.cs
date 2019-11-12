@@ -29,6 +29,11 @@ namespace nitwitapi
         public void ConfigureServices(IServiceCollection services)
         {
             var doloresSettings = Configuration.GetSection("dolores").Get<DoloresSettings>();
+
+            // Overrule error details settings when not in Debug Mode.
+            if (doloresSettings.ErrorDetailsInResponses != "None" && !DebugMode.Enabled)
+                doloresSettings.ErrorDetailsInResponses = "None";
+
             services.AddSingleton(doloresSettings);
         }
 
